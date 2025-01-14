@@ -2,6 +2,19 @@
   "expo": {
     "name": "StepTracker",
     "slug": "StepTracker",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "plugins": [
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion"
+        }
+      ]
+    ],
+    "ios": {
+      "infoPlist": {
+        "NSMotionUsageDescription": "Allow $(PRODUCT_NAME) to access your device motion to count steps"
+      }
+    }
   }
 }
