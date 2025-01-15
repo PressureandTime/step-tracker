@@ -2,11 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Platform } from 'react-native';
 import { Pedometer } from 'expo-sensors';
 
+// Average step length in meters (based on average adult step length)
+const STEP_LENGTH = 0.762;
+
 export default function App() {
   const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
   const [pastStepCount, setPastStepCount] = useState(0);
   const [currentStepCount, setCurrentStepCount] = useState(0);
   const [error, setError] = useState(null);
+
+  // Calculate distance in kilometers
+  const calculateDistance = (steps) => {
+    const distanceInMeters = steps * STEP_LENGTH;
+    return (distanceInMeters / 1000).toFixed(2);
+  };
 
   const subscribe = async () => {
     try {
@@ -64,7 +73,9 @@ export default function App() {
       <Text style={styles.text}>Pedometer status: {isPedometerAvailable}</Text>
       {error && <Text style={styles.error}>Error: {error}</Text>}
       <Text style={styles.text}>Steps taken in the last 24 hours: {pastStepCount}</Text>
+      <Text style={styles.text}>Distance covered in last 24 hours: {calculateDistance(pastStepCount)} km</Text>
       <Text style={styles.text}>Walk! New steps: {currentStepCount}</Text>
+      <Text style={styles.text}>Current distance: {calculateDistance(currentStepCount)} km</Text>
     </View>
   );
 }
