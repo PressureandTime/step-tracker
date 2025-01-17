@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Linking } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
 import { registerUser, confirmAccountActivation, testApiRequest } from '../api/auth';
 import Modal from 'react-native-modal';
 import { styles } from '../styles/RegistrationScreenStyles';
+import Recaptcha from 'react-native-recaptcha-that-works';
 
 const RegistrationScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [testResponse, setTestResponse] = useState(null);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
+
+  const recaptchaRef = useRef();
 
   const registerMutation = useMutation({
     mutationFn: async (data) => {
@@ -69,11 +73,39 @@ const RegistrationScreen = () => {
       setMessage('Please accept the privacy policy to continue');
       return;
     }
-    setModalVisible(true);
+    recaptchaRef.current?.open();
+  };
+
+  const onVerify = (token) => {
+    console.log('reCAPTCHA verified:', token);
+    setRecaptchaToken(token);
+    registerMutation.mutate({ email, password });
+  };
+
+  const onExpire = () => {
+    console.warn('reCAPTCHA expired');
+    setMessage('reCAPTCHA verification expired. Please try again.');
+    setRecaptchaToken(null);
+  };
+
+  const onError = (error) => {
+    console.error('reCAPTCHA error:', error);
+    setMessage('reCAPTCHA verification failed. Please try again.');
+    setRecaptchaToken(null);
   };
 
   return (
     <View style={styles.container}>
+      <Recaptcha
+        ref={recaptchaRef}
+        siteKey="6LeXjzMqAAAAAH9K_xefUwbJ0sxc0cp9GCSNAGcU"
+        baseUrl="https://planinarske-akcije.com"
+        onVerify={onVerify}
+        onExpire={onExpire}
+        onError={onError}
+        size="normal"
+      />
+
       <View style={styles.formContainer}>
         {message ? (
           <Text
