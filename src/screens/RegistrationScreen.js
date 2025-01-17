@@ -7,6 +7,8 @@ import { styles } from '../styles/RegistrationScreenStyles';
 import Recaptcha from 'react-native-recaptcha-that-works';
 
 const RegistrationScreen = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -79,7 +81,12 @@ const RegistrationScreen = () => {
   const onVerify = (token) => {
     console.log('reCAPTCHA verified:', token);
     setRecaptchaToken(token);
-    registerMutation.mutate({ email, password });
+    registerMutation.mutate({ 
+      firstName,
+      lastName,
+      email, 
+      password 
+    });
   };
 
   const onExpire = () => {
@@ -117,6 +124,20 @@ const RegistrationScreen = () => {
             {message}
           </Text>
         ) : null}
+        <TextInput
+          style={styles.input}
+          placeholder="First Name"
+          value={firstName}
+          onChangeText={setFirstName}
+          autoCapitalize="words"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Last Name"
+          value={lastName}
+          onChangeText={setLastName}
+          autoCapitalize="words"
+        />
         <TextInput
           style={styles.input}
           placeholder="Email"
