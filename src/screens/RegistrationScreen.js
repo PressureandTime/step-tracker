@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Linking } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
-import { registerUser, confirmAccountActivation } from '../api/auth';
+import { registerUser, confirmAccountActivation, testApiRequest } from '../api/auth';
 import Modal from 'react-native-modal';
 import { WebView } from 'react-native-webview';
 
@@ -9,15 +9,18 @@ const RegistrationScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [testResponse, setTestResponse] = useState(null);
   const [recaptchaToken, setRecaptchaToken] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
+  const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
 
   const registerMutation = useMutation({
     mutationFn: async (data) => {
+      console.log('sending request for register');
       if (!recaptchaToken) {
         throw new Error('Please complete the reCAPTCHA verification');
       }
-      return registerUser({ ...data, recaptchaToken });
+      return registerUser({ ...data, recaptchaToken, privacyPolicyAccepted });
     },
     onSuccess: (data) => {
       setMessage('Registration successful! Please check your email for activation link.');
@@ -29,10 +32,24 @@ const RegistrationScreen = () => {
     },
   });
 
-  const onRecaptchaVerify = (token) => {
-    setRecaptchaToken(token);
-    setModalVisible(false);
-    registerMutation.mutate({ email, password });
+  const handleWebViewMessage = (event) => {
+    console.log('Received reCAPTCHA message:', event.nativeEvent.data);
+    const token = event.nativeEvent.data;
+    if (token.startsWith('error:')) {
+      console.error('reCAPTCHA error:', token);
+      setMessage('reCAPTCHA error: ' + token.substring(7));
+    } else if (token === 'expired') {
+      console.warn('reCAPTCHA expired');
+      setMessage('reCAPTCHA verification expired. Please try again.');
+    } else if (token === 'error') {
+      console.error('reCAPTCHA verification failed');
+      setMessage('reCAPTCHA verification failed. Please try again.');
+    } else {
+      console.log('reCAPTCHA verification successful, token:', token);
+      setRecaptchaToken(token);
+      setModalVisible(false);
+      registerMutation.mutate({ email, password });
+    }
   };
 
   useEffect(() => {
@@ -68,6 +85,10 @@ const RegistrationScreen = () => {
       setMessage('Please fill in all fields');
       return;
     }
+    if (!privacyPolicyAccepted) {
+      setMessage('Please accept the privacy policy to continue');
+      return;
+    }
     setModalVisible(true);
   };
 
@@ -75,18 +96,66 @@ const RegistrationScreen = () => {
     <html>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+        <script>
+          function handleError(error) {
+            console.error('reCAPTCHA Error:', error);
+            window.ReactNativeWebView.postMessage('error: ' + error.message);
+          }
+
+          function initializeRecaptcha() {
+            try {
+              if (typeof grecaptcha === 'undefined') {
+                throw new Error('reCAPTCHA script not loaded');
+              }
+
+              grecaptcha.ready(function() {
+                try {
+                  // Test site key for local development
+                  const sitekey = window.location.hostname === 'localhost'
+                    ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' // Google's test key
+                    : '6LeXjzMqAAAAAH9K_xefUwbJ0sxc0cp9GCSNAGcU'; // Production key
+
+                  console.log('Initializing reCAPTCHA with sitekey:', sitekey);
+                  console.log('Current hostname:', window.location.hostname);
+
+                  grecaptcha.render('recaptcha-container', {
+                    sitekey: sitekey,
+                    callback: function(token) {
+                      console.log('reCAPTCHA token received');
+                      window.ReactNativeWebView.postMessage(token);
+                    },
+                    'expired-callback': function() {
+                      console.warn('reCAPTCHA expired');
+                      window.ReactNativeWebView.postMessage('expired');
+                    },
+                    'error-callback': function(error) {
+                      console.error('reCAPTCHA error:', error);
+                      window.ReactNativeWebView.postMessage('error: ' + (error?.message || error || 'Unknown error'));
+                    }
+                  });
+                } catch (error) {
+                  handleError(error);
+                }
+              });
+            } catch (error) {
+              handleError(error);
+            }
+          }
+
+          // Add event listener for script load errors
+          document.addEventListener('error', function(event) {
+            if (event.target.tagName === 'SCRIPT') {
+              handleError(new Error('Failed to load reCAPTCHA script'));
+            }
+          }, true);
+        </script>
       </head>
       <body style="margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
-        <div class="g-recaptcha"
-          data-sitekey="6LeXjzMqAAAAAH9K_xefUwbJ0sxc0cp9GCSNAGcU"
-          data-callback="onRecaptchaVerified"
-          data-size="normal">
-        </div>
+        <div id="recaptcha-container"></div>
         <script>
-          window.onRecaptchaVerified = function(token) {
-            window.ReactNativeWebView.postMessage(token);
-          }
+          // Initialize with a small delay to ensure everything is loaded
+          setTimeout(initializeRecaptcha, 500);
         </script>
       </body>
     </html>
@@ -97,7 +166,10 @@ const RegistrationScreen = () => {
       <View style={styles.formContainer}>
         {message ? (
           <Text
-            style={[styles.message, message.includes('failed') ? styles.error : styles.success]}
+            style={[
+              styles.message,
+              message.includes('failed') ? styles.errorMessage : styles.successMessage,
+            ]}
           >
             {message}
           </Text>
@@ -117,15 +189,44 @@ const RegistrationScreen = () => {
           onChangeText={setPassword}
           secureTextEntry
         />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleRegister}
-          disabled={registerMutation.isPending}
-        >
-          <Text style={styles.buttonText}>
-            {registerMutation.isPending ? 'Registering...' : 'Register'}
-          </Text>
+
+        <View style={styles.privacyPolicyContainer}>
+          <TouchableOpacity
+            style={styles.checkboxContainer}
+            onPress={() => setPrivacyPolicyAccepted(!privacyPolicyAccepted)}
+          >
+            <View style={[styles.checkbox, privacyPolicyAccepted && styles.checkboxChecked]}>
+              {privacyPolicyAccepted && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.privacyPolicyText}>
+              I accept the privacy policy and terms of service
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, { marginTop: 10, backgroundColor: '#34C759' }]}
+          onPress={async () => {
+            try {
+              const data = await testApiRequest();
+              setTestResponse(`Received ${data.length} posts`);
+              console.log('API Test Response:', data);
+            } catch (error) {
+              setTestResponse('Test failed: ' + error.message);
+              console.error('API Test Error:', error);
+            }
+          }}
+        >
+          <Text style={styles.buttonText}>Test API Request</Text>
+        </TouchableOpacity>
+
+        {testResponse && (
+          <Text style={[styles.message, styles.successMessage]}>{testResponse}</Text>
+        )}
       </View>
 
       <Modal
@@ -136,10 +237,27 @@ const RegistrationScreen = () => {
         <View style={styles.modalContent}>
           <WebView
             source={{ html: recaptchaHTML }}
-            onMessage={(event) => {
-              onRecaptchaVerify(event.nativeEvent.data);
-            }}
+            onMessage={handleWebViewMessage}
             style={styles.webview}
+            onLoadStart={() => console.log('WebView loading started')}
+            onLoadEnd={() => console.log('WebView loading finished')}
+            onError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView error:', nativeEvent);
+              setMessage('Failed to load reCAPTCHA. Please check your internet connection.');
+              setModalVisible(false);
+            }}
+            onHttpError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView HTTP error:', nativeEvent);
+              setMessage('Failed to load reCAPTCHA. Please try again later.');
+              setModalVisible(false);
+            }}
+            onContentProcessDidTerminate={() => {
+              console.warn('WebView content process terminated');
+              setMessage('reCAPTCHA failed to load. Please try again.');
+              setModalVisible(false);
+            }}
           />
         </View>
       </Modal>
@@ -183,11 +301,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
-  error: {
+  errorMessage: {
     backgroundColor: '#FFE5E5',
     color: '#D8000C',
   },
-  success: {
+  successMessage: {
     backgroundColor: '#DFF2BF',
     color: '#4F8A10',
   },
@@ -200,6 +318,36 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+  },
+  privacyPolicyContainer: {
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#000',
+    marginRight: 10,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  privacyPolicyText: {
+    fontSize: 14,
+    color: '#333',
   },
 });
 
