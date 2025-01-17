@@ -1,24 +1,56 @@
 import client from './client';
 
 export const registerUser = async ({ email, password, recaptchaToken, privacyPolicyAccepted }) => {
-  const response = await client.post('/registration', {
+  console.log('Sending registration request...');
+  console.log(
+    'email, password, recaptchaToken, privacyPolicyAccepted',
     email,
     password,
     recaptchaToken,
-    privacyPolicyAccepted,
-  });
-  return response.data;
+    privacyPolicyAccepted
+  );
+  try {
+    const response = await client.post('/registration', {
+      email,
+      password,
+      recaptchaToken,
+      privacyPolicyAccepted,
+    });
+    console.log('Registration successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Registration failed:', error);
+    console.error('Error response:', error.response);
+    console.error('Error message:', error.message);
+    throw error;
+  }
 };
 
 export const confirmAccountActivation = async (id) => {
-  const response = await client.post('/activate_account', { id });
-  return response.data;
+  console.log('Sending account activation request...');
+  try {
+    const response = await client.post('/activate_account', { id });
+    console.log('Account activation successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Account activation failed:', error);
+    console.error('Error response:', error.response);
+    console.error('Error message:', error.message);
+    throw error;
+  }
 };
 
 export const testApiRequest = async () => {
-  const response = await fetch('https://jsonplaceholder.typicode.com/posts');
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
+  console.log('Sending test API request...');
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    console.log('Test API request successful:', response.json());
+    return response.json();
+  } catch (error) {
+    console.error('Test API request failed:', error);
+    throw error;
   }
-  return response.json();
 };
