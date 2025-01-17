@@ -52,7 +52,7 @@ const RegistrationScreen = () => {
 
     const subscription = Linking.addListener('url', handleDeepLink);
 
-    Linking.getInitialURL().then(url => {
+    Linking.getInitialURL().then((url) => {
       if (url) {
         handleDeepLink({ url });
       }
@@ -77,16 +77,14 @@ const RegistrationScreen = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
       </head>
-      <body>
-        <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-          <div class="g-recaptcha" 
-            data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
-            data-callback="onRecaptchaVerified"
-            data-size="normal">
-          </div>
+      <body style="margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <div class="g-recaptcha"
+          data-sitekey="6LeXjzMqAAAAAH9K_xefUwbJ0sxc0cp9GCSNAGcU"
+          data-callback="onRecaptchaVerified"
+          data-size="normal">
         </div>
         <script>
-          function onRecaptchaVerified(token) {
+          window.onRecaptchaVerified = function(token) {
             window.ReactNativeWebView.postMessage(token);
           }
         </script>
@@ -98,7 +96,9 @@ const RegistrationScreen = () => {
     <View style={styles.container}>
       <View style={styles.formContainer}>
         {message ? (
-          <Text style={[styles.message, message.includes('failed') ? styles.error : styles.success]}>
+          <Text
+            style={[styles.message, message.includes('failed') ? styles.error : styles.success]}
+          >
             {message}
           </Text>
         ) : null}

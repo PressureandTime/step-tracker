@@ -10,8 +10,8 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <View style={styles.container}>
-        {/* <RegistrationScreen /> */}
-        <StepCounter />
+        <RegistrationScreen />
+        {/* <StepCounter /> */}
       </View>
     </QueryClientProvider>
   );
