@@ -3,14 +3,13 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet, Linking } from 're
 import { useMutation } from '@tanstack/react-query';
 import { registerUser, confirmAccountActivation, testApiRequest } from '../api/auth';
 import Modal from 'react-native-modal';
-import { WebView } from 'react-native-webview';
 
 const RegistrationScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [testResponse, setTestResponse] = useState(null);
-  const [recaptchaToken, setRecaptchaToken] = useState('');
+
   const [isModalVisible, setModalVisible] = useState(false);
   const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
 
@@ -31,26 +30,6 @@ const RegistrationScreen = () => {
       console.error('Registration failed:', error);
     },
   });
-
-  const handleWebViewMessage = (event) => {
-    console.log('Received reCAPTCHA message:', event.nativeEvent.data);
-    const token = event.nativeEvent.data;
-    if (token.startsWith('error:')) {
-      console.error('reCAPTCHA error:', token);
-      setMessage('reCAPTCHA error: ' + token.substring(7));
-    } else if (token === 'expired') {
-      console.warn('reCAPTCHA expired');
-      setMessage('reCAPTCHA verification expired. Please try again.');
-    } else if (token === 'error') {
-      console.error('reCAPTCHA verification failed');
-      setMessage('reCAPTCHA verification failed. Please try again.');
-    } else {
-      console.log('reCAPTCHA verification successful, token:', token);
-      setRecaptchaToken(token);
-      setModalVisible(false);
-      registerMutation.mutate({ email, password });
-    }
-  };
 
   useEffect(() => {
     const handleDeepLink = async (event) => {
@@ -91,75 +70,6 @@ const RegistrationScreen = () => {
     }
     setModalVisible(true);
   };
-
-  const recaptchaHTML = `
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
-        <script>
-          function handleError(error) {
-            console.error('reCAPTCHA Error:', error);
-            window.ReactNativeWebView.postMessage('error: ' + error.message);
-          }
-
-          function initializeRecaptcha() {
-            try {
-              if (typeof grecaptcha === 'undefined') {
-                throw new Error('reCAPTCHA script not loaded');
-              }
-
-              grecaptcha.ready(function() {
-                try {
-                  // Test site key for local development
-                  const sitekey = window.location.hostname === 'localhost'
-                    ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' // Google's test key
-                    : '6LeXjzMqAAAAAH9K_xefUwbJ0sxc0cp9GCSNAGcU'; // Production key
-
-                  console.log('Initializing reCAPTCHA with sitekey:', sitekey);
-                  console.log('Current hostname:', window.location.hostname);
-
-                  grecaptcha.render('recaptcha-container', {
-                    sitekey: sitekey,
-                    callback: function(token) {
-                      console.log('reCAPTCHA token received');
-                      window.ReactNativeWebView.postMessage(token);
-                    },
-                    'expired-callback': function() {
-                      console.warn('reCAPTCHA expired');
-                      window.ReactNativeWebView.postMessage('expired');
-                    },
-                    'error-callback': function(error) {
-                      console.error('reCAPTCHA error:', error);
-                      window.ReactNativeWebView.postMessage('error: ' + (error?.message || error || 'Unknown error'));
-                    }
-                  });
-                } catch (error) {
-                  handleError(error);
-                }
-              });
-            } catch (error) {
-              handleError(error);
-            }
-          }
-
-          // Add event listener for script load errors
-          document.addEventListener('error', function(event) {
-            if (event.target.tagName === 'SCRIPT') {
-              handleError(new Error('Failed to load reCAPTCHA script'));
-            }
-          }, true);
-        </script>
-      </head>
-      <body style="margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
-        <div id="recaptcha-container"></div>
-        <script>
-          // Initialize with a small delay to ensure everything is loaded
-          setTimeout(initializeRecaptcha, 500);
-        </script>
-      </body>
-    </html>
-  `;
 
   return (
     <View style={styles.container}>
@@ -228,39 +138,6 @@ const RegistrationScreen = () => {
           <Text style={[styles.message, styles.successMessage]}>{testResponse}</Text>
         )}
       </View>
-
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-        style={styles.modal}
-      >
-        <View style={styles.modalContent}>
-          <WebView
-            source={{ html: recaptchaHTML }}
-            onMessage={handleWebViewMessage}
-            style={styles.webview}
-            onLoadStart={() => console.log('WebView loading started')}
-            onLoadEnd={() => console.log('WebView loading finished')}
-            onError={(syntheticEvent) => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView error:', nativeEvent);
-              setMessage('Failed to load reCAPTCHA. Please check your internet connection.');
-              setModalVisible(false);
-            }}
-            onHttpError={(syntheticEvent) => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView HTTP error:', nativeEvent);
-              setMessage('Failed to load reCAPTCHA. Please try again later.');
-              setModalVisible(false);
-            }}
-            onContentProcessDidTerminate={() => {
-              console.warn('WebView content process terminated');
-              setMessage('reCAPTCHA failed to load. Please try again.');
-              setModalVisible(false);
-            }}
-          />
-        </View>
-      </Modal>
     </View>
   );
 };
