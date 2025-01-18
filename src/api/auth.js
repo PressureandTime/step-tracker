@@ -1,22 +1,14 @@
 import client from './client';
 
-export const registerUser = async ({
-  firstName,
-  lastName,
-  email,
-  password,
-  recaptchaToken,
-  privacyPolicyAccepted,
-}) => {
+export const registerUser = async ({ firstName, lastName, email, password, recaptchaToken }) => {
   console.log('Sending registration request...');
   console.log(
-    'first_name, last_name, email, password, g-recaptcha-response, privacy-policy-check',
+    'first_name, last_name, email, password, g-recaptcha-response',
     firstName,
     lastName,
     email,
     password,
-    recaptchaToken,
-    privacyPolicyAccepted
+    recaptchaToken
   );
   try {
     const response = await client.post('/registration', {
@@ -25,7 +17,6 @@ export const registerUser = async ({
       email,
       password,
       'g-recaptcha-response': recaptchaToken,
-      'privacy-policy-check': privacyPolicyAccepted,
     });
     console.log('Registration successful:', response.data);
     return response.data;
