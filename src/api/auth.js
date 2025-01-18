@@ -11,7 +11,7 @@ export const registerUser = async ({ firstName, lastName, email, password, recap
     recaptchaToken
   );
   try {
-    const response = await client.post('/registration', {
+    const response = await client.post('/users/registration', {
       first_name: firstName,
       last_name: lastName,
       email,

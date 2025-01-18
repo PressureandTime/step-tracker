@@ -102,7 +102,7 @@ const RegistrationScreen = () => {
       <Recaptcha
         ref={recaptchaRef}
         siteKey="6LeXjzMqAAAAAH9K_xefUwbJ0sxc0cp9GCSNAGcU"
-        baseUrl="https://planinarske-akcije.com"
+        baseUrl="https://planinarske-akcije.com/users/registration"
         onVerify={onVerify}
         onExpire={onExpire}
         onError={onError}
