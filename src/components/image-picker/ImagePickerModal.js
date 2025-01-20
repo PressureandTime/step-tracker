@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-export const ImagePickerModal = ({ visible, onClose, onImageSelect }) => {
+export const ImagePickerModal = ({ visible, onClose, onImageSelect, title }) => {
   const takePhoto = async () => {
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
@@ -35,7 +35,7 @@ export const ImagePickerModal = ({ visible, onClose, onImageSelect }) => {
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Upload Profile Photo</Text>
+          <Text style={styles.modalTitle}>{title}</Text>
           <TouchableOpacity style={styles.modalButton} onPress={takePhoto}>
             <Text style={styles.modalButtonText}>Take Photo</Text>
           </TouchableOpacity>

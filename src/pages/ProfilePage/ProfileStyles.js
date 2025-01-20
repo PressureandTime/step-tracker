@@ -11,34 +11,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
   },
-  header: {
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  profileImageContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#E8F0FE',
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#000',
-    marginBottom: 4,
-  },
-  location: {
-    fontSize: 16,
-    color: '#666',
-  },
-
   tabs: {
     flexDirection: 'row',
     justifyContent: 'space-between', // Changed from space-around
@@ -140,6 +112,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: 'white',
+  },
+
+  galleryContainer: {
+    flex: 1,
+  },
+  galleryContent: {
+    paddingVertical: 10,
+  },
+  galleryRow: {
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  galleryImage: {
+    width: '32%',
+    aspectRatio: 1,
+    borderRadius: 8,
+  },
+  addImageButton: {
+    flexDirection: 'row',
+    backgroundColor: '#4CAF50',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  addImageButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+    marginLeft: 8,
   },
 });
 

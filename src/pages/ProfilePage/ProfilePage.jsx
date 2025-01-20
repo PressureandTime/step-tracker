@@ -1,14 +1,35 @@
 // ProfilePage.js
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, Image, FlatList } from 'react-native';
 import { ImagePickerModal } from '../../components/image-picker/ImagePickerModal';
 import { MaterialIcons } from '@expo/vector-icons';
 import styles from './ProfileStyles';
+import ProfileHeader from './ProfileHeader';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
   const [profileImage, setProfileImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [modalType, setModalType] = useState('profile'); // 'profile' or 'gallery'
+
+  const handleImageSelect = (uri) => {
+    if (modalType === 'profile') {
+      setProfileImage(uri);
+    } else {
+      setGalleryImages([...galleryImages, { id: Date.now().toString(), uri }]);
+    }
+  };
+
+  const openImagePicker = (type) => {
+    setModalType(type);
+    setModalVisible(true);
+  };
+
+  const renderGalleryItem = ({ item }) => (
+    <Image source={{ uri: item.uri }} style={styles.galleryImage} />
+  );
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -41,9 +62,23 @@ export const ProfilePage = () => {
         );
       case 'Gallery':
         return (
-          <View>
+          <View style={styles.galleryContainer}>
             <Text style={styles.sectionTitle}>Gallery</Text>
-            {/* Add your Gallery content here */}
+            <TouchableOpacity
+              style={styles.addImageButton}
+              onPress={() => openImagePicker('gallery')}
+            >
+              <MaterialIcons name="add-photo-alternate" size={24} color="white" />
+              <Text style={styles.addImageButtonText}>Add Image</Text>
+            </TouchableOpacity>
+            <FlatList
+              data={galleryImages}
+              renderItem={renderGalleryItem}
+              keyExtractor={(item) => item.id}
+              numColumns={3}
+              columnWrapperStyle={styles.galleryRow}
+              contentContainerStyle={styles.galleryContent}
+            />
           </View>
         );
       case 'Friends':
@@ -61,30 +96,14 @@ export const ProfilePage = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.profileImageContainer}>
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              style={styles.profileImageWrapper}
-            >
-              <Image
-                source={profileImage ? { uri: profileImage } : null}
-                style={styles.profileImage}
-              />
-              {/* require('./assets/default-avatar.png') */}
-              <View style={styles.editIconContainer}>
-                <MaterialIcons name="edit" size={20} color="white" />
-              </View>
-            </TouchableOpacity>
-            <ImagePickerModal
-              visible={modalVisible}
-              onClose={() => setModalVisible(false)}
-              onImageSelect={(uri) => setProfileImage(uri)}
-            />
-          </View>
-          <Text style={styles.userName}>John Doe</Text>
-          <Text style={styles.location}>San Francisco, CA</Text>
-        </View>
+        <ProfileHeader
+          user={{
+            profileImage,
+            name: 'John Doe',
+            location: 'San Francisco, CA',
+          }}
+          onEditProfile={() => openImagePicker('profile')}
+        />
 
         <View style={styles.tabs}>
           {['Info', 'Activities', 'Gallery', 'Friends'].map((tab) => (
@@ -96,14 +115,20 @@ export const ProfilePage = () => {
 
         {renderTabContent()}
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Edit Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.secondaryButton]}>
-            <Text style={[styles.buttonText, styles.secondaryButtonText]}>View Gallery</Text>
-          </TouchableOpacity>
-        </View>
+        {activeTab !== 'Gallery' && (
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Edit Profile</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <ImagePickerModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onImageSelect={handleImageSelect}
+          title={modalType === 'profile' ? 'Upload Profile Photo' : 'Add to Gallery'}
+        />
       </View>
     </SafeAreaView>
   );
