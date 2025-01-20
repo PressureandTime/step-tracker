@@ -1,67 +1,87 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { profileStyles } from './ProfileStyles';
+// ProfilePage.js
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import styles from './ProfileStyles';
 
 export const ProfilePage = () => {
+  const [activeTab, setActiveTab] = useState('Activities');
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'Info':
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>Info</Text>
+            {/* Add your Info content here */}
+          </View>
+        );
+      case 'Activities':
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>Activities</Text>
+            <View style={styles.activities}>
+              <View style={styles.activityCard}>
+                <Text style={styles.activityValue}>12000</Text>
+                <Text style={styles.activityLabel}>Steps</Text>
+              </View>
+              <View style={styles.activityCard}>
+                <Text style={styles.activityValue}>300m</Text>
+                <Text style={styles.activityLabel}>Elevation</Text>
+              </View>
+              <View style={styles.activityCard}>
+                <Text style={styles.activityValue}>10.5km</Text>
+                <Text style={styles.activityLabel}>Distance</Text>
+              </View>
+            </View>
+          </View>
+        );
+      case 'Gallery':
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>Gallery</Text>
+            {/* Add your Gallery content here */}
+          </View>
+        );
+      case 'Friends':
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>Friends</Text>
+            {/* Add your Friends content here */}
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <ScrollView style={profileStyles.container}>
-      <View style={profileStyles.header}>
-        <LinearGradient
-          colors={['#2196F3', '#00E676', '#FF4081']}
-          style={profileStyles.profileGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <View style={profileStyles.profileImageContainer}>{/* image */}</View>
-        </LinearGradient>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.profileImageContainer} />
+          <Text style={styles.userName}>John Doe</Text>
+          <Text style={styles.location}>San Francisco, CA</Text>
+        </View>
 
-        <Text style={profileStyles.userName}>User Name</Text>
-        <Text style={profileStyles.userSteps}>Your Steps</Text>
-      </View>
+        <View style={styles.tabs}>
+          {['Info', 'Activities', 'Gallery', 'Friends'].map((tab) => (
+            <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tabButton}>
+              <Text style={[styles.tabItem, activeTab === tab && styles.activeTab]}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      <View style={profileStyles.statsContainer}>
-        <View style={profileStyles.statBox}>
-          <Text style={profileStyles.statNumber}>2,38</Text>
-          <Text style={profileStyles.statLabel}>Total Steps</Text>
-        </View>
-        <View style={profileStyles.statBox}>
-          <Text style={profileStyles.statNumber}>2,32</Text>
-          <Text style={profileStyles.statLabel}>Daily Ave</Text>
-        </View>
-      </View>
+        {renderTabContent()}
 
-      <View style={profileStyles.iconContainer}>
-        <View style={[profileStyles.iconCircle, { borderColor: '#2196F3' }]}>
-          {/* <Image source={require('./assets/footstep.png')} style={profileStyles.icon} /> */}
-        </View>
-        <View style={[profileStyles.iconCircle, { borderColor: '#00E676' }]}>
-          {/* <Image source={require('./assets/footstep.png')} style={profileStyles.icon} /> */}
-        </View>
-        <View style={[profileStyles.iconCircle, { borderColor: '#FF4081' }]}>
-          {/* <Image source={require('./assets/question.png')} style={profileStyles.icon} /> */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Edit Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.secondaryButton]}>
+            <Text style={[styles.buttonText, styles.secondaryButtonText]}>View Gallery</Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      <View style={profileStyles.graphSection}>
-        <Text style={profileStyles.graphTitle}>Daily Average</Text>
-        <View style={profileStyles.barChart}>{/* Add your bar chart component here */}</View>
-        <Text style={profileStyles.graphSubtitle}>Weekly Rank</Text>
-      </View>
-
-      <View style={profileStyles.bottomNav}>
-        <TouchableOpacity style={profileStyles.navButton}>
-          {/* <Image source={require('./assets/home.png')} style={profileStyles.navIcon} /> */}
-        </TouchableOpacity>
-        <TouchableOpacity style={profileStyles.navButton}>
-          {/* <Image source={require('./assets/stats.png')} style={profileStyles.navIcon} /> */}
-        </TouchableOpacity>
-        <TouchableOpacity style={profileStyles.navButton}>
-          {/* <Image source={require('./assets/profile.png')} style={profileStyles.navIcon} /> */}
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 };
-
-export default ProfilePage;

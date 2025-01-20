@@ -1,114 +1,123 @@
+// ProfileStyles.js
 import { StyleSheet } from 'react-native';
 
-export const profileStyles = StyleSheet.create({
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
   },
   header: {
     alignItems: 'center',
-    padding: 20,
-  },
-  profileGradient: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
   },
   profileImageContainer: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
+    backgroundColor: '#E8F0FE',
+    marginBottom: 10,
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
   },
   userName: {
     fontSize: 24,
     fontWeight: '600',
-    marginTop: 10,
     color: '#000',
+    marginBottom: 4,
   },
-  userSteps: {
+  location: {
     fontSize: 16,
     color: '#666',
-    marginTop: 5,
   },
-  statsContainer: {
+
+  tabs: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 30,
-    marginTop: 20,
+    justifyContent: 'space-between', // Changed from space-around
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    marginBottom: 20,
+    paddingHorizontal: 10, // Added to give some edge padding
   },
-  statBox: {
-    alignItems: 'center',
+  tabButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 12, // Reduced from 16
   },
-  statNumber: {
-    fontSize: 32,
-    fontWeight: '700',
+  tabItem: {
+    fontSize: 14, // Reduced from 16
+    color: '#0066FF',
+  },
+  activeTab: {
     color: '#000',
+    fontWeight: '500',
+    borderBottomWidth: 2,
+    borderBottomColor: '#000',
   },
-  statLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 5,
-  },
-  iconContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 50,
-    marginTop: 30,
-  },
-  iconCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  icon: {
-    width: 24,
-    height: 24,
-  },
-  graphSection: {
-    padding: 20,
-    marginTop: 20,
-  },
-  graphTitle: {
-    fontSize: 20,
+  sectionTitle: {
+    fontSize: 24,
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: 20,
+    color: '#000',
   },
-  barChart: {
-    height: 200,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 10,
-    marginVertical: 10,
+  activities: {
+    flexDirection: 'column',
+    gap: 16,
   },
-  graphSubtitle: {
+  activityCard: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+  },
+  activityValue: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 4,
+  },
+  activityLabel: {
     fontSize: 16,
     color: '#666',
-    marginTop: 10,
   },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#EEE',
+  buttonContainer: {
+    marginTop: 'auto',
+    paddingBottom: 20,
+    gap: 12,
   },
-  navButton: {
-    padding: 10,
+  button: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
   },
-  navIcon: {
-    width: 24,
-    height: 24,
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  secondaryButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+  },
+  secondaryButtonText: {
+    color: '#4CAF50',
+  },
+  // Add to your existing styles in ProfileStyles.js
+  tabButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
 });
+
+export default styles;
