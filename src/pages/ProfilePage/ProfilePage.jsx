@@ -1,10 +1,11 @@
 // ProfilePage.js
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, Image, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { ImagePickerModal } from '../../components/image-picker/ImagePickerModal';
 import { MaterialIcons } from '@expo/vector-icons';
 import styles from './ProfileStyles';
 import ProfileHeader from './ProfileHeader';
+import Gallery from './Gallery';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
@@ -61,26 +62,7 @@ export const ProfilePage = () => {
           </View>
         );
       case 'Gallery':
-        return (
-          <View style={styles.galleryContainer}>
-            <Text style={styles.sectionTitle}>Gallery</Text>
-            <TouchableOpacity
-              style={styles.addImageButton}
-              onPress={() => openImagePicker('gallery')}
-            >
-              <MaterialIcons name="add-photo-alternate" size={24} color="white" />
-              <Text style={styles.addImageButtonText}>Add Image</Text>
-            </TouchableOpacity>
-            <FlatList
-              data={galleryImages}
-              renderItem={renderGalleryItem}
-              keyExtractor={(item) => item.id}
-              numColumns={3}
-              columnWrapperStyle={styles.galleryRow}
-              contentContainerStyle={styles.galleryContent}
-            />
-          </View>
-        );
+        return <Gallery images={galleryImages} onAddImage={() => openImagePicker('gallery')} />;
       case 'Friends':
         return (
           <View>
