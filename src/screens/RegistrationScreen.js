@@ -16,6 +16,7 @@ const RegistrationScreen = () => {
   const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   const [isModalVisible, setModalVisible] = useState(false);
+  const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
 
   const recaptchaRef = useRef();
 
@@ -25,7 +26,7 @@ const RegistrationScreen = () => {
       if (!recaptchaToken) {
         throw new Error('Please complete the reCAPTCHA verification');
       }
-      return registerUser({ ...data, recaptchaToken });
+      return registerUser({ ...data, recaptchaToken, privacyPolicyAccepted });
     },
     onSuccess: (data) => {
       setMessage('Registration successful! Please check your email for activation link.');
@@ -70,7 +71,10 @@ const RegistrationScreen = () => {
       setMessage('Please fill in all fields');
       return;
     }
-
+    if (!privacyPolicyAccepted) {
+      setMessage('Please accept the privacy policy to continue');
+      return;
+    }
     recaptchaRef.current?.open();
   };
 
@@ -149,6 +153,20 @@ const RegistrationScreen = () => {
           onChangeText={setPassword}
           secureTextEntry
         />
+
+        <View style={styles.privacyPolicyContainer}>
+          <TouchableOpacity
+            style={styles.checkboxContainer}
+            onPress={() => setPrivacyPolicyAccepted(!privacyPolicyAccepted)}
+          >
+            <View style={[styles.checkbox, privacyPolicyAccepted && styles.checkboxChecked]}>
+              {privacyPolicyAccepted && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.privacyPolicyText}>
+              I accept the privacy policy and terms of service
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Register</Text>

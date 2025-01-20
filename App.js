@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import { StepCounter } from './src/components/StepCounter';
+import { ProfilePage } from './src/pages/ProfilePage/ProfilePage';
 
 const queryClient = new QueryClient();
 
@@ -10,8 +11,9 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <View style={styles.container}>
-        <RegistrationScreen />
+        {/* <RegistrationScreen /> */}
         {/* <StepCounter /> */}
+        <ProfilePage />
       </View>
     </QueryClientProvider>
   );
