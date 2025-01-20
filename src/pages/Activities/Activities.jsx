@@ -20,6 +20,7 @@ export const Activities = () => {
     monthly: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  let barometerSubscription;
 
   useEffect(() => {
     let subscription;
@@ -52,7 +53,6 @@ export const Activities = () => {
           });
 
           // Subscribe to real-time updates
-          let barometerSubscription;
           if (isBarometerAvailable) {
             barometerSubscription = Barometer.addListener(({ altitude }) => {
               setCurrentData((prev) => ({
