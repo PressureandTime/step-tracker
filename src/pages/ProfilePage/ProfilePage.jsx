@@ -7,6 +7,7 @@ import styles from './ProfileStyles';
 import ProfileHeader from './ProfileHeader';
 import Gallery from './Gallery';
 import { Activities } from '../Activities/Activities';
+import { FriendRequests } from '../Friends/FriendRequests';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
@@ -50,7 +51,7 @@ export const ProfilePage = () => {
         return (
           <View>
             <Text style={styles.sectionTitle}>Friends</Text>
-            {/* Add your Friends content here */}
+            <FriendRequests />
           </View>
         );
       default:
