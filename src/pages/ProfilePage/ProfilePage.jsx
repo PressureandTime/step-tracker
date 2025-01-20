@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import styles from './ProfileStyles';
 import ProfileHeader from './ProfileHeader';
 import Gallery from './Gallery';
+import { Activities } from '../Activities/Activities';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
@@ -42,25 +43,7 @@ export const ProfilePage = () => {
           </View>
         );
       case 'Activities':
-        return (
-          <View>
-            <Text style={styles.sectionTitle}>Activities</Text>
-            <View style={styles.activities}>
-              <View style={styles.activityCard}>
-                <Text style={styles.activityValue}>12000</Text>
-                <Text style={styles.activityLabel}>Steps</Text>
-              </View>
-              <View style={styles.activityCard}>
-                <Text style={styles.activityValue}>300m</Text>
-                <Text style={styles.activityLabel}>Elevation</Text>
-              </View>
-              <View style={styles.activityCard}>
-                <Text style={styles.activityValue}>10.5km</Text>
-                <Text style={styles.activityLabel}>Distance</Text>
-              </View>
-            </View>
-          </View>
-        );
+        return <Activities />;
       case 'Gallery':
         return <Gallery images={galleryImages} onAddImage={() => openImagePicker('gallery')} />;
       case 'Friends':

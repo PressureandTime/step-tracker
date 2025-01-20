@@ -113,6 +113,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'white',
   },
+
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 16,
+    fontSize: 14,
+  },
 });
 
 export default styles;
