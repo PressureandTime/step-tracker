@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import { Pedometer } from 'expo-sensors';
+import { Pedometer, Barometer } from 'expo-sensors';
 import { LineChart } from 'react-native-chart-kit';
 import styles from './ActivitiesStyles';
 
@@ -12,6 +12,7 @@ export const Activities = () => {
     distance: 0,
     pace: 0,
     calories: 0,
+    elevation: 0,
   });
   const [historicalData, setHistoricalData] = useState({
     daily: 0,
@@ -25,9 +26,12 @@ export const Activities = () => {
 
     const fetchStepData = async () => {
       try {
-        const isAvailable = await Pedometer.isAvailableAsync();
+        const [isPedometerAvailable, isBarometerAvailable] = await Promise.all([
+          Pedometer.isAvailableAsync(),
+          Barometer.isAvailableAsync(),
+        ]);
 
-        if (isAvailable) {
+        if (isPedometerAvailable) {
           // Get last 24 hours data
           const end = new Date();
           const start = new Date();
@@ -48,9 +52,23 @@ export const Activities = () => {
           });
 
           // Subscribe to real-time updates
+          let barometerSubscription;
+          if (isBarometerAvailable) {
+            barometerSubscription = Barometer.addListener(({ altitude }) => {
+              setCurrentData((prev) => ({
+                ...prev,
+                elevation: altitude || 0,
+              }));
+            });
+          }
+
           subscription = Pedometer.watchStepCount((result) => {
             updateCurrentMetrics(result.steps);
           });
+
+          return () => {
+            barometerSubscription?.remove();
+          };
         }
       } catch (error) {
         console.error('Pedometer error:', error);
@@ -60,7 +78,10 @@ export const Activities = () => {
     };
 
     fetchStepData();
-    return () => subscription?.remove();
+    return () => {
+      subscription?.remove();
+      barometerSubscription?.remove();
+    };
   }, []);
 
   return (
@@ -75,6 +96,11 @@ export const Activities = () => {
           icon="local-fire-department"
         />
         <MetricCard value={`${currentData.pace}/km`} label="Avg Pace" icon="speed" />
+        <MetricCard
+          value={`${(currentData.elevation || 0).toFixed(1)} m`}
+          label="Elevation"
+          icon="terrain"
+        />
 
         {/* Historical Comparison */}
         <View style={styles.historySection}>
