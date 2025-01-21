@@ -5,6 +5,7 @@ import { registerUser, confirmAccountActivation, testApiRequest } from '../api/a
 import Modal from 'react-native-modal';
 import { styles } from '../styles/RegistrationScreenStyles';
 import Recaptcha from 'react-native-recaptcha-that-works';
+import GoogleSignInButton from '../google-sign-in/GoogleSignIn';
 
 const RegistrationScreen = () => {
   const [firstName, setFirstName] = useState('');
@@ -172,7 +173,9 @@ const RegistrationScreen = () => {
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        <GoogleSignInButton />
+
+        {/* <TouchableOpacity
           style={[styles.button, { marginTop: 10, backgroundColor: '#34C759' }]}
           onPress={async () => {
             try {
@@ -186,7 +189,7 @@ const RegistrationScreen = () => {
           }}
         >
           <Text style={styles.buttonText}>Test API Request</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {testResponse && (
           <Text style={[styles.message, styles.successMessage]}>{testResponse}</Text>

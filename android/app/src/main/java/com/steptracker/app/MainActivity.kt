@@ -1,4 +1,4 @@
-package com.steptracker
+package com.steptracker.app
 
 import android.os.Build
 import android.os.Bundle

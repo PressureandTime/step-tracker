@@ -11,9 +11,9 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <View style={styles.container}>
-        {/* <RegistrationScreen /> */}
+        <RegistrationScreen />
         {/* <StepCounter /> */}
-        <ProfilePage />
+        {/* <ProfilePage /> */}
       </View>
     </QueryClientProvider>
   );
