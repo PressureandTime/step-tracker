@@ -8,6 +8,8 @@ import ProfileHeader from './ProfileHeader';
 import Gallery from './Gallery';
 import { Activities } from '../Activities/Activities';
 import { FriendRequests } from '../Friends/FriendRequests';
+import MetricCard from '../../components/metrics/MetricsCard';
+import Info from '../../pages/Info/Info';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
@@ -37,12 +39,8 @@ export const ProfilePage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Info':
-        return (
-          <View>
-            <Text style={styles.sectionTitle}>Info</Text>
-            {/* Add your Info content here */}
-          </View>
-        );
+        return <Info />;
+
       case 'Activities':
         return <Activities />;
       case 'Gallery':

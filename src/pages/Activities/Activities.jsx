@@ -4,7 +4,7 @@ import { Pedometer, Barometer } from 'expo-sensors';
 import { LineChart } from 'react-native-chart-kit';
 import styles from './ActivitiesStyles';
 
-import { MetricCard } from '../../components/metrics/MetricsCard';
+import MetricCard from '../../components/metrics/MetricsCard';
 
 export const Activities = () => {
   const [currentData, setCurrentData] = useState({
