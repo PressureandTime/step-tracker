@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "604602640307",
+    "project_id": "hiking-a3668",
+    "storage_bucket": "hiking-a3668.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604602640307:android:f7a331a3a3302580414dc6",
+        "android_client_info": {
+          "package_name": "com.steptracker.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8U9LJswr2MSDfIJ_SuoRpa2RqGWtksH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
