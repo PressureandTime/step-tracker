@@ -36,11 +36,19 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location to show your position on the map."
+        }
+      ],
       "@react-native-google-signin/google-signin"
     ],
     "android": {
       "permissions": [
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
       ],
       "package": "com.steptracker.app"
     }

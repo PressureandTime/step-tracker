@@ -10,6 +10,7 @@ import { Activities } from '../Activities/Activities';
 import { FriendRequests } from '../Friends/FriendRequests';
 import MetricCard from '../../components/metrics/MetricsCard';
 import Info from '../../pages/Info/Info';
+import MapTab from './MapTab';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
@@ -45,6 +46,8 @@ export const ProfilePage = () => {
         return <Activities />;
       case 'Gallery':
         return <Gallery images={galleryImages} onAddImage={() => openImagePicker('gallery')} />;
+      case 'Map':
+        return <MapTab />;
       case 'Friends':
         return (
           <View>
@@ -70,7 +73,7 @@ export const ProfilePage = () => {
         />
 
         <View style={styles.tabs}>
-          {['Info', 'Activities', 'Gallery', 'Friends'].map((tab) => (
+          {['Info', 'Activities', 'Gallery', 'Map', 'Friends'].map((tab) => (
             <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tabButton}>
               <Text style={[styles.tabItem, activeTab === tab && styles.activeTab]}>{tab}</Text>
             </TouchableOpacity>
