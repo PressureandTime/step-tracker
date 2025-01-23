@@ -5,6 +5,12 @@ import { LineChart } from 'react-native-chart-kit';
 import styles from './ActivitiesStyles';
 
 import MetricCard from '../../components/metrics/MetricsCard';
+import {
+  STEP_LENGTH,
+  calculateDistance,
+  calculateCalories,
+  calculatePace,
+} from '../../utils/stepCalculations';
 
 export const Activities = () => {
   const [currentData, setCurrentData] = useState({
