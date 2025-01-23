@@ -14,6 +14,7 @@ import MapTab from './MapTab';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
+  const editButtonText = activeTab === 'Friends' ? 'Add Friend' : 'Edit Profile';
   const [profileImage, setProfileImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
