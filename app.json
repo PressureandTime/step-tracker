@@ -7,9 +7,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "jsEngine": "jsc",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.steptracker.app",
       "infoPlist": {
@@ -19,7 +17,8 @@
               "com.googleusercontent.apps.1023700507024-qovl7t6dijqjio8p868toj91e1q7i134"
             ]
           }
-        ]
+        ],
+        "NSMotionUsageDescription": "Allow StepTracker to access your motion and fitness activity to track steps."
       }
     },
     "scheme": "steptracker",
