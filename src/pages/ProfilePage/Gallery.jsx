@@ -11,10 +11,6 @@ const Gallery = ({ images, onAddImage }) => {
   return (
     <View style={styles.galleryContainer}>
       <Text style={styles.sectionTitle}>Gallery</Text>
-      <TouchableOpacity style={styles.addImageButton} onPress={onAddImage}>
-        <MaterialIcons name="add-photo-alternate" size={24} color="white" />
-        <Text style={styles.addImageButtonText}>Add Image</Text>
-      </TouchableOpacity>
       <FlatList
         data={images}
         renderItem={renderGalleryItem}
@@ -23,6 +19,10 @@ const Gallery = ({ images, onAddImage }) => {
         columnWrapperStyle={styles.galleryRow}
         contentContainerStyle={styles.galleryContent}
       />
+      <TouchableOpacity style={styles.addImageButton} onPress={onAddImage}>
+        <MaterialIcons name="add-photo-alternate" size={20} color="white" />
+        <Text style={styles.addImageButtonText}>Add Image</Text>
+      </TouchableOpacity>
     </View>
   );
 };
