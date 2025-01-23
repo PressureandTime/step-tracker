@@ -5,15 +5,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   galleryContent: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
     paddingVertical: 10,
   },
-  galleryRow: {
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
   galleryImage: {
-    width: '32%',
-    aspectRatio: 1,
+    width: 110,
+    height: 110,
+    margin: 5,
     borderRadius: 8,
   },
   addImageButton: {

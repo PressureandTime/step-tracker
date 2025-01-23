@@ -7,7 +7,6 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingBottom: 20,
   },
   tabs: {
     flexDirection: 'row',
@@ -27,9 +26,17 @@ export default StyleSheet.create({
     color: '#007AFF',
     fontWeight: '600',
   },
+  contentContainer: {
+    flex: 1,
+    paddingBottom: 80,
+  },
   buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     paddingHorizontal: 20,
-    marginTop: 20,
+    paddingBottom: 20,
   },
   button: {
     backgroundColor: '#007AFF',

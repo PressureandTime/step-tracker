@@ -50,12 +50,7 @@ export const ProfilePage = () => {
       case 'Map':
         return <MapTab />;
       case 'Friends':
-        return (
-          <View>
-            <Text style={styles.sectionTitle}>Friends</Text>
-            <FriendRequests />
-          </View>
-        );
+        return <FriendRequests />;
       default:
         return null;
     }
@@ -81,12 +76,12 @@ export const ProfilePage = () => {
           ))}
         </View>
 
-        {renderTabContent()}
+        <View style={styles.contentContainer}>{renderTabContent()}</View>
 
         {activeTab !== 'Gallery' && (
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Edit Profile</Text>
+              <Text style={styles.buttonText}>{editButtonText}</Text>
             </TouchableOpacity>
           </View>
         )}
