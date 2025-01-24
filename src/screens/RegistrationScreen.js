@@ -7,7 +7,7 @@ import { styles } from '../styles/RegistrationScreenStyles';
 import Recaptcha from 'react-native-recaptcha-that-works';
 import GoogleSignInButton from '../google-sign-in/GoogleSignIn';
 
-const RegistrationScreen = () => {
+export const RegistrationScreen = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');

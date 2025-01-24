@@ -1,27 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import RegistrationScreen from './src/screens/RegistrationScreen';
-import { StepCounter } from './src/components/StepCounter';
-import { ProfilePage } from './src/pages/ProfilePage/ProfilePage';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomTabNavigator from './src/navigation/BottomTabNavigator';
+import { View } from 'react-native';
+import { RegistrationScreen } from './src/screens/RegistrationScreen';
+
+// Required for react-native-screens
+import { enableScreens } from 'react-native-screens';
+enableScreens();
 
 const queryClient = new QueryClient();
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <View style={styles.container}>
-        {/* <RegistrationScreen /> */}
-        {/* <StepCounter /> */}
-        <ProfilePage />
-      </View>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <View style={{ flex: 1 }}>
+          <QueryClientProvider client={queryClient}>
+            <NavigationContainer>
+              <BottomTabNavigator />
+            </NavigationContainer>
+          </QueryClientProvider>
+        </View>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-});
