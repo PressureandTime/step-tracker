@@ -1,7 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Import your screens here
 import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
@@ -23,13 +24,13 @@ const PLACEHOLDER_EVENTS = [
     guide: 'Branislav Makljenović',
     club: {
       name: 'Klub Džepovi Prirode',
-      logoUrl: 'https://placekitten.com/50/50', // Placeholder logo
+      logoUrl: 'https://placekitten.com/50/50',
     },
     distance: 11,
     elevation: 600,
     price: '2.700',
     date: 'Sub 25.1',
-    imageUrl: 'https://picsum.photos/800/400', // Placeholder image
+    imageUrl: 'https://picsum.photos/800/400',
   },
   {
     id: 2,
@@ -37,13 +38,13 @@ const PLACEHOLDER_EVENTS = [
     guide: 'Mirjana Prokić',
     club: {
       name: 'PD Železničar 1948',
-      logoUrl: 'https://placekitten.com/50/50', // Placeholder logo
+      logoUrl: 'https://placekitten.com/50/50',
     },
     distance: 13,
     elevation: 250,
     price: '2.600',
     date: 'Sub 25.1',
-    imageUrl: 'https://picsum.photos/800/400', // Placeholder image
+    imageUrl: 'https://picsum.photos/800/400',
   },
 ];
 
@@ -65,76 +66,109 @@ const SettingsScreen = () => (
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabNavigator = () => {
-  const notificationCount = 3;
+const CustomHeader = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
 
   return (
+    <View style={[styles.headerWrapper, { paddingTop: insets.top }]}>
+      <View style={styles.headerContainer}>
+        <View style={styles.headerLeft}>
+          <View style={{ width: 40 }} />
+        </View>
+        <Text style={styles.headerTitle}>HikeFinder</Text>
+        <TouchableOpacity
+          style={styles.profileButton}
+          onPress={() => navigation.navigate('Profile')}
+        >
+          <MaterialIcons name="person" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const CustomTabBar = ({ state, descriptors, navigation }) => {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View
+      style={[
+        styles.tabBar,
+        {
+          height: 49 + insets.bottom,
+          paddingBottom: insets.bottom,
+        },
+      ]}
+    >
+      {state.routes.map((route, index) => {
+        if (route.name === 'Profile') return null;
+
+        const { options } = descriptors[route.key];
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        return (
+          <TouchableOpacity key={route.key} onPress={onPress} style={styles.tabItem}>
+            {route.name === 'Notifications' ? (
+              <View>
+                <MaterialIcons
+                  name="notifications"
+                  size={24}
+                  color={isFocused ? '#007AFF' : '#666'}
+                />
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>3</Text>
+                </View>
+              </View>
+            ) : (
+              <MaterialIcons
+                name={
+                  route.name === 'Events' ? 'explore' : route.name === 'Map' ? 'place' : 'settings'
+                }
+                size={24}
+                color={isFocused ? '#007AFF' : '#666'}
+              />
+            )}
+            <Text style={[styles.tabLabel, { color: isFocused ? '#007AFF' : '#666' }]}>
+              {route.name}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+};
+
+const BottomTabNavigator = () => {
+  return (
     <Tab.Navigator
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#666',
-        tabBarStyle: {
-          height: 80,
-          paddingBottom: 20,
-          paddingTop: 8,
-          backgroundColor: 'white',
-          borderTopWidth: 1,
-          borderTopColor: '#e5e5e5',
-        },
-        headerStyle: {
-          backgroundColor: '#1a1a1a',
-        },
-        headerTitleStyle: {
-          color: 'white',
-          fontSize: 24,
-          fontWeight: '600',
-        },
-        headerTitle: 'HikeFinder',
+        header: ({ navigation }) => <CustomHeader navigation={navigation} />,
+      }}
+      sceneContainerStyle={{
+        backgroundColor: '#f5f5f5',
       }}
     >
-      <Tab.Screen
-        name="Events"
-        component={EventsScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => <MaterialIcons name="explore" size={24} color={color} />,
-          tabBarLabel: ({ color }) => <Text style={[styles.tabText, { color }]}>Events</Text>,
-        }}
-      />
-      <Tab.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <View>
-              <MaterialIcons name="notifications" size={24} color={color} />
-              {notificationCount > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{notificationCount}</Text>
-                </View>
-              )}
-            </View>
-          ),
-          tabBarLabel: ({ color }) => (
-            <Text style={[styles.tabText, { color }]}>Notifications</Text>
-          ),
-        }}
-      />
+      <Tab.Screen name="Events" component={EventsScreen} />
+      <Tab.Screen name="Map" component={MapTab} />
+      <Tab.Screen name="Notifications" component={NotificationsScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
       <Tab.Screen
         name="Profile"
         component={ProfilePage}
         options={{
-          tabBarIcon: ({ color, size }) => <MaterialIcons name="person" size={24} color={color} />,
-          tabBarLabel: ({ color }) => <Text style={[styles.tabText, { color }]}>Profile</Text>,
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="settings" size={24} color={color} />
-          ),
-          tabBarLabel: ({ color }) => <Text style={[styles.tabText, { color }]}>Settings</Text>,
+          tabBarButton: () => null,
         }}
       />
     </Tab.Navigator>
@@ -155,25 +189,64 @@ const styles = StyleSheet.create({
   eventsList: {
     padding: 16,
   },
-  tabText: {
-    fontSize: 12,
-    marginTop: 4,
+  headerWrapper: {
+    backgroundColor: '#1a1a1a',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 44,
+    paddingHorizontal: 16,
+  },
+  headerLeft: {
+    width: 40,
+  },
+  headerTitle: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
+    flex: 1,
+  },
+  profileButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badge: {
     position: 'absolute',
     right: -6,
     top: -3,
     backgroundColor: 'red',
-    borderRadius: 8,
-    width: 16,
-    height: 16,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 4,
   },
   badgeText: {
     color: 'white',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
+  },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#e5e5e5',
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 8,
+  },
+  tabLabel: {
+    fontSize: 10,
+    marginTop: 4,
   },
 });
 

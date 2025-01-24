@@ -42,13 +42,10 @@ export const ProfilePage = () => {
     switch (activeTab) {
       case 'Info':
         return <Info />;
-
       case 'Activities':
         return <Activities />;
       case 'Gallery':
         return <Gallery images={galleryImages} onAddImage={() => openImagePicker('gallery')} />;
-      case 'Map':
-        return <MapTab />;
       case 'Friends':
         return <FriendRequests />;
       default:
@@ -69,7 +66,7 @@ export const ProfilePage = () => {
         />
 
         <View style={styles.tabs}>
-          {['Info', 'Activities', 'Gallery', 'Map', 'Friends'].map((tab) => (
+          {['Info', 'Activities', 'Gallery', 'Friends'].map((tab) => (
             <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tabButton}>
               <Text style={[styles.tabItem, activeTab === tab && styles.activeTab]}>{tab}</Text>
             </TouchableOpacity>
