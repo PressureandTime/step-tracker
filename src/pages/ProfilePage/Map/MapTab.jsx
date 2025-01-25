@@ -26,12 +26,19 @@ const MapTab = () => {
   } = useCurrentLocation(mapRef);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [initialRegionSet, setInitialRegionSet] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const handleLocationSelect = (suggestion) => {
-    // Extract the most relevant part of the address (usually the first part before the comma)
     const displayText = suggestion.displayName.split(',')[0] || suggestion.displayName;
-    setSearchText(displayText.substring(0, 30)); // Reduced to 30 characters for better visibility
+    setSearchText(displayText.substring(0, 30));
     setShowSuggestions(false);
+
+    // Add selected location to state
+    setSelectedLocation({
+      latitude: suggestion.latitude,
+      longitude: suggestion.longitude,
+      title: displayText,
+    });
 
     if (mapRef.current) {
       mapRef.current.animateToRegion(
@@ -97,6 +104,14 @@ const MapTab = () => {
               longitude: parseFloat(results[0].lon),
             };
 
+            // Add selected location to state
+            const displayText =
+              results[0].display_name?.split(',')[0] || results[0].display_name || searchText;
+            setSelectedLocation({
+              ...result,
+              title: displayText,
+            });
+
             if (mapRef.current) {
               mapRef.current.animateToRegion(
                 {
@@ -108,8 +123,6 @@ const MapTab = () => {
               );
             }
 
-            const displayText =
-              results[0].display_name?.split(',')[0] || results[0].display_name || searchText;
             setSearchText(displayText.substring(0, 30));
           }
         } catch (parseError) {
@@ -226,6 +239,17 @@ const MapTab = () => {
             }}
             title="Your Location"
             description="You are here"
+            pinColor="blue"
+          />
+        )}
+        {selectedLocation && (
+          <Marker
+            coordinate={{
+              latitude: selectedLocation.latitude,
+              longitude: selectedLocation.longitude,
+            }}
+            title={selectedLocation.title}
+            description="Selected Location"
           />
         )}
       </MapView>
