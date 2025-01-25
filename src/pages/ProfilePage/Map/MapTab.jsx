@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { useLocationSuggestions } from './hooks/useLocationSuggestions';
 import { useCurrentLocation } from './hooks/useCurrentLocation';
 
@@ -25,6 +25,7 @@ const MapTab = () => {
     focusOnCurrentLocation,
   } = useCurrentLocation(mapRef);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [initialRegionSet, setInitialRegionSet] = useState(false);
 
   const handleLocationSelect = (suggestion) => {
     // Extract the most relevant part of the address (usually the first part before the comma)
@@ -174,22 +175,60 @@ const MapTab = () => {
     }
   };
 
+  // Add effect to handle initial region setting
+  React.useEffect(() => {
+    if (location && !initialRegionSet && mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        },
+        500
+      );
+      setInitialRegionSet(true);
+    }
+  }, [location, initialRegionSet]);
+
+  // Modify the focusOnCurrentLocation handler
+  const handleFocusOnCurrentLocation = useCallback(() => {
+    if (location && mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.005, // Smaller delta for closer zoom
+          longitudeDelta: 0.005,
+        },
+        500
+      );
+    }
+  }, [location]);
+
   return (
     <View style={styles.container}>
       <MapView
         ref={mapRef}
         style={styles.map}
-        initialRegion={
-          location
-            ? {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }
-            : null
-        }
-      />
+        initialRegion={{
+          latitude: 0,
+          longitude: 0,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      >
+        {location && (
+          <Marker
+            coordinate={{
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            }}
+            title="Your Location"
+            description="You are here"
+          />
+        )}
+      </MapView>
 
       <View style={styles.searchContainer}>
         <TextInput
@@ -226,7 +265,7 @@ const MapTab = () => {
         </ScrollView>
       )}
 
-      <TouchableOpacity style={styles.locationButton} onPress={focusOnCurrentLocation}>
+      <TouchableOpacity style={styles.locationButton} onPress={handleFocusOnCurrentLocation}>
         <MaterialIcons name="my-location" size={24} color="#000" />
       </TouchableOpacity>
 
