@@ -29,6 +29,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="steptracker"/>
         <data android:scheme="com.steptracker.app"/>
+        <data android:scheme="exp+steptracker"/>
       </intent-filter>
     </activity>
   </application>

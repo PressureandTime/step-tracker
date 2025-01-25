@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "jsEngine": "jsc",
+    "jsEngine": "hermes",
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.steptracker.app",
@@ -23,6 +23,7 @@
     },
     "scheme": "steptracker",
     "plugins": [
+      "expo-dev-client",
       [
         "expo-sensors",
         {

@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import { View } from 'react-native';
 import { RegistrationScreen } from './src/screens/RegistrationScreen';
+import 'react-native-devsettings';
 
 // Required for react-native-screens
 import { enableScreens } from 'react-native-screens';

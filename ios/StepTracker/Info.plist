@@ -30,6 +30,12 @@
           <string>com.googleusercontent.apps.1023700507024-qovl7t6dijqjio8p868toj91e1q7i134</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>exp+steptracker</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
