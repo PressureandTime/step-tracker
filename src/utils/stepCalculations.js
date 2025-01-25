@@ -3,7 +3,7 @@ export const STEP_LENGTH = 0.762; // Average step length in meters
 
 export const calculateDistance = (steps) => {
   const distanceInMeters = steps * STEP_LENGTH;
-  return (distanceInMeters / 1000).toFixed(2);
+  return Number((distanceInMeters / 1000).toFixed(2));
 };
 
 export const calculateCalories = (steps) => {

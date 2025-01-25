@@ -52,6 +52,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  warningText: {
+    color: '#ff6b6b',
+    textAlign: 'center',
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#fff5f5',
+    borderRadius: 8,
+    width: '100%',
+  },
+  debugSection: {
+    backgroundColor: '#f8f9fa',
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#dee2e6',
+  },
+  debugText: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
 });
 
 export default styles;
