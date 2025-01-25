@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   TextInput,
@@ -15,6 +15,7 @@ import { useCurrentLocation } from './hooks/useCurrentLocation';
 
 const MapTab = () => {
   const mapRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
   const [searchText, setSearchText] = useState('');
   const { suggestions, isLoading, getSuggestions } = useLocationSuggestions();
   const {
@@ -26,77 +27,108 @@ const MapTab = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleLocationSelect = (suggestion) => {
-    setSearchText(suggestion.displayName);
+    // Extract the most relevant part of the address (usually the first part before the comma)
+    const displayText = suggestion.displayName.split(',')[0] || suggestion.displayName;
+    setSearchText(displayText.substring(0, 30)); // Reduced to 30 characters for better visibility
     setShowSuggestions(false);
 
-    if (mapRef.current) {
-      mapRef.current.animateToRegion({
-        latitude: suggestion.latitude,
-        longitude: suggestion.longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-      });
-    }
-  };
-
-  const handleImmediateSearch = async () => {
-    if (!searchText.trim()) return;
-
-    setShowSuggestions(false);
-
-    // Move map immediately based on search text
-    const approxCoords = await getApproximateCoordinates(searchText);
     if (mapRef.current) {
       mapRef.current.animateToRegion(
         {
-          ...approxCoords,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
+          latitude: suggestion.latitude,
+          longitude: suggestion.longitude,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
         },
         500
       );
     }
-
-    // Then get precise location
-    try {
-      const searchUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(
-        searchText.trim()
-      )}&limit=1&namedetails=0&addressdetails=0`;
-
-      const response = await fetch(searchUrl, {
-        headers: {
-          'Accept-Language': 'en',
-          'User-Agent': 'StepTracker_App/1.0',
-        },
-      });
-
-      const results = await response.json();
-
-      if (results?.[0]) {
-        const result = {
-          latitude: parseFloat(results[0].lat),
-          longitude: parseFloat(results[0].lon),
-        };
-
-        // Adjust map to precise location
-        if (mapRef.current) {
-          mapRef.current.animateToRegion(
-            {
-              ...result,
-              latitudeDelta: 0.005,
-              longitudeDelta: 0.005,
-            },
-            500
-          );
-        }
-
-        // Update search text
-        setSearchText(results[0].display_name || searchText);
-      }
-    } catch (error) {
-      console.error('Error getting precise location:', error);
-    }
   };
+
+  const handleSearchChange = (text) => {
+    setSearchText(text);
+    setShowSuggestions(true);
+
+    // Clear any existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Set new timeout for suggestions
+    searchTimeoutRef.current = setTimeout(() => {
+      getSuggestions(text);
+    }, 300); // 300ms delay
+  };
+
+  const handleImmediateSearch = useCallback(async () => {
+    if (!searchText.trim()) return;
+
+    // Show loading state if needed
+    setShowSuggestions(false);
+
+    // Clear any existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Add a small delay for better UX
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          searchText.trim()
+        )}&limit=1`;
+
+        const response = await fetch(searchUrl, {
+          headers: {
+            Accept: 'application/json',
+            'Accept-Language': 'en',
+            'User-Agent': 'StepTracker_App/1.0',
+          },
+        });
+
+        const responseText = await response.text();
+        try {
+          const results = JSON.parse(responseText);
+
+          if (results?.[0]) {
+            const result = {
+              latitude: parseFloat(results[0].lat),
+              longitude: parseFloat(results[0].lon),
+            };
+
+            if (mapRef.current) {
+              mapRef.current.animateToRegion(
+                {
+                  ...result,
+                  latitudeDelta: 0.005,
+                  longitudeDelta: 0.005,
+                },
+                500
+              );
+            }
+
+            const displayText =
+              results[0].display_name?.split(',')[0] || results[0].display_name || searchText;
+            setSearchText(displayText.substring(0, 30));
+          }
+        } catch (parseError) {
+          console.error('Response was not JSON:', responseText.substring(0, 200));
+          console.error('Parse error:', parseError);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+      }
+    }, 200); // 200ms delay for search execution
+  }, [searchText]);
+
+  // Cleanup timeout on component unmount
+  React.useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Get approximate coordinates quickly based on search text
   const getApproximateCoordinates = async (text) => {
@@ -140,12 +172,6 @@ const MapTab = () => {
       console.error('Error in approximate coordinates:', error);
       return { latitude: 0, longitude: 0 };
     }
-  };
-
-  const handleSearchChange = (text) => {
-    setSearchText(text);
-    setShowSuggestions(true);
-    getSuggestions(text);
   };
 
   return (
@@ -241,6 +267,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   searchButton: {
     position: 'absolute',
