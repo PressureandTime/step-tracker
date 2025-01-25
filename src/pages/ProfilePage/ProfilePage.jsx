@@ -10,7 +10,7 @@ import { Activities } from '../Activities/Activities';
 import { FriendRequests } from '../Friends/FriendRequests';
 import MetricCard from '../../components/metrics/MetricsCard';
 import Info from '../../pages/Info/Info';
-import MapTab from './MapTab';
+import MapTab from './Map/MapTab';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');

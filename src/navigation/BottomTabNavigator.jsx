@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Import your screens here
 import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
-import MapTab from '../pages/ProfilePage/MapTab';
+import MapTab from '../pages/ProfilePage/Map/MapTab';
 import EventCard from '../components/events/EventCard';
 
 // Placeholder components (replace these with your actual screens)
