@@ -24,7 +24,7 @@ const Login = ({ navigation }) => {
     onSuccess: async (data) => {
       try {
         console.log('Storing authentication tokens...');
-        const success = await setAuthTokens(data.access_token);
+        const success = await setAuthTokens(data?.token);
         if (success) {
           console.log('Authentication successful');
           setIsAuthenticated(true);

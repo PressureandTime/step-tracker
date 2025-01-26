@@ -5,7 +5,7 @@ export const useHikes = () => {
   return useQuery({
     queryKey: ['hikes'],
     queryFn: async () => {
-      const response = await apiClient.get('/api/hikes/');
+      const response = await apiClient.get('/api/hikes');
       return response.data;
     },
     retry: 1,
