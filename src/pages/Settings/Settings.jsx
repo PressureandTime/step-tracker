@@ -1,20 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { clearAuthTokens } from '../../utils/auth';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../context/AuthContext';
 
 const Settings = () => {
   const navigation = useNavigation();
+  const { setIsAuthenticated } = useContext(AuthContext);
 
   const handleLogout = async () => {
     try {
       console.log('Logging out...');
       await clearAuthTokens();
       console.log('Tokens cleared, navigating to Login');
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
+      setIsAuthenticated(false);
     } catch (error) {
       console.error('Error during logout:', error);
     }

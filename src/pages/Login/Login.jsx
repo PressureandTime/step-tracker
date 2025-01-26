@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
 import { setAuthTokens } from '../../utils/auth';
 import { apiClient } from '../../utils/apiClient';
 import { styles } from './LoginStyles';
+import { AuthContext } from '../../context/AuthContext';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { setIsAuthenticated } = useContext(AuthContext);
 
   const loginMutation = useMutation({
     mutationFn: async (credentials) => {
@@ -24,8 +26,8 @@ const Login = ({ navigation }) => {
         console.log('Storing authentication tokens...');
         const success = await setAuthTokens(data.access_token);
         if (success) {
-          console.log('Authentication successful, navigating to Home');
-          navigation.replace('Home');
+          console.log('Authentication successful');
+          setIsAuthenticated(true);
         } else {
           setError('Failed to store authentication data');
         }
