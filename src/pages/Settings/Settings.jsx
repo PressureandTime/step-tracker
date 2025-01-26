@@ -22,8 +22,8 @@ const Settings = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Log Out</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogout}>
+        <Text style={styles.buttonText}>Log Out</Text>
       </TouchableOpacity>
     </View>
   );
@@ -35,14 +35,14 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
-  logoutButton: {
-    backgroundColor: '#ff3b30',
+  button: {
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
+    backgroundColor: '#ff3b30',
   },
-  logoutButtonText: {
+  buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',

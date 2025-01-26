@@ -12,7 +12,7 @@ apiClient.interceptors.request.use(async (config) => {
   const token = await getAuthTokens();
 
   if (token && !config.url.includes('/api/login')) {
-    config.headers['Authorization'] = `Bearer Bearer ${token}`;
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
 
   // Log details only for hikes request
