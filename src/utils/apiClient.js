@@ -11,33 +11,15 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(async (config) => {
   const token = await getAuthTokens();
 
-  console.log('Request interceptor running for:', config.url);
-  console.log('Token retrieved:', token ? 'exists' : 'missing');
-
   if (token && !config.url.includes('/api/login')) {
     const authHeader = `Bearer ${token}`;
     config.headers['Authorization'] = authHeader;
-    console.log('Authorization header set:', authHeader);
-
-    // Log exact header comparison
-    console.log('Headers comparison:', {
-      'Content-Type': config.headers['Content-Type'],
-      Authorization: config.headers['Authorization'],
-      Accept: config.headers['Accept'] || 'not set',
-    });
   }
 
   // Ensure trailing slashes are handled consistently
   if (config.url.endsWith('/') && !config.url.includes('/api/login')) {
     config.url = config.url.slice(0, -1);
   }
-
-  // Log details for all requests
-  console.log('Complete request details:', {
-    fullUrl: `${config.baseURL}${config.url}`,
-    method: config.method,
-    headers: config.headers,
-  });
 
   return config;
 });
