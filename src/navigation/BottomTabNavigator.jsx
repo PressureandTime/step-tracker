@@ -1,66 +1,19 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Import your screens here
 import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
 import MapTab from '../pages/ProfilePage/Map/MapTab';
-import EventCard from '../components/events/EventCard';
+import Events from '../pages/Events/Events';
+import Settings from '../pages/Settings/Settings';
 
-// Placeholder components (replace these with your actual screens)
+// Placeholder components
 const NotificationsScreen = () => (
   <View style={styles.screenContainer}>
     <Text>Notifications Screen</Text>
-  </View>
-);
-
-// Placeholder event data
-const PLACEHOLDER_EVENTS = [
-  {
-    id: 1,
-    title: 'KOZOMOR CIRCULAR STAZAMA',
-    guide: 'Branislav Makljenović',
-    club: {
-      name: 'Klub Džepovi Prirode',
-      logoUrl: 'https://placekitten.com/50/50',
-    },
-    distance: 11,
-    elevation: 600,
-    price: '2.700',
-    date: 'Sub 25.1',
-    imageUrl: 'https://picsum.photos/800/400',
-  },
-  {
-    id: 2,
-    title: 'MALJEN DIVČIBARE',
-    guide: 'Mirjana Prokić',
-    club: {
-      name: 'PD Železničar 1948',
-      logoUrl: 'https://placekitten.com/50/50',
-    },
-    distance: 13,
-    elevation: 250,
-    price: '2.600',
-    date: 'Sub 25.1',
-    imageUrl: 'https://picsum.photos/800/400',
-  },
-];
-
-const EventsScreen = () => (
-  <ScrollView style={styles.eventsContainer}>
-    <View style={styles.eventsList}>
-      {PLACEHOLDER_EVENTS.map((event) => (
-        <EventCard key={event.id} event={event} />
-      ))}
-    </View>
-  </ScrollView>
-);
-
-const SettingsScreen = () => (
-  <View style={styles.screenContainer}>
-    <Text>Settings Screen</Text>
   </View>
 );
 
@@ -160,10 +113,10 @@ const BottomTabNavigator = () => {
         backgroundColor: '#f5f5f5',
       }}
     >
-      <Tab.Screen name="Events" component={EventsScreen} />
+      <Tab.Screen name="Events" component={Events} />
       <Tab.Screen name="Map" component={MapTab} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen name="Settings" component={Settings} />
       <Tab.Screen
         name="Profile"
         component={ProfilePage}
@@ -181,13 +134,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
-  },
-  eventsContainer: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  eventsList: {
-    padding: 16,
   },
   headerWrapper: {
     backgroundColor: '#1a1a1a',

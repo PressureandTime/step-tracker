@@ -1,49 +1,78 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const EventCard = ({ event }) => {
-  const { title, guide, club, distance, elevation, price, date, imageUrl } = event;
+  const handleDetailPress = async () => {
+    if (event.detailLink) {
+      try {
+        await Linking.openURL(event.detailLink);
+      } catch (error) {
+        console.error('Error opening URL:', error);
+      }
+    }
+  };
+
+  const getDifficultyColor = (diff) => {
+    switch (diff) {
+      case 1:
+        return '#4CAF50'; // Easy - Green
+      case 2:
+        return '#FFC107'; // Medium - Yellow
+      case 3:
+        return '#FF5722'; // Hard - Orange
+      default:
+        return '#757575'; // Unknown - Gray
+    }
+  };
 
   return (
-    <View style={styles.card}>
-      {date && (
-        <View style={styles.dateTag}>
-          <Text style={styles.dateText}>{date}</Text>
-        </View>
-      )}
-      {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
+    <TouchableOpacity style={styles.card} onPress={handleDetailPress}>
+      <View style={styles.imageContainer}>
+        <MaterialIcons name="landscape" size={48} color="#666" />
+      </View>
       <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{event.title}</Text>
+
         <View style={styles.guideRow}>
-          <Text style={styles.guideLabel}>Vodič: </Text>
-          <Text style={styles.guideText}>{guide}</Text>
+          <MaterialIcons name="person" size={16} color="#666" />
+          <Text style={styles.guideText}>{event.guide}</Text>
         </View>
-        <View style={styles.clubRow}>
-          <Image source={{ uri: club.logoUrl }} style={styles.clubLogo} />
-          <Text style={styles.clubName}>{club.name}</Text>
+
+        <TouchableOpacity style={styles.clubButton}>
+          <MaterialIcons name="group" size={20} color="#007AFF" />
+          <Text style={styles.clubName}>{event.club.name}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.statsContainer}>
+          <View style={styles.stat}>
+            <MaterialIcons name="straighten" size={16} color="#666" />
+            <Text style={styles.statText}>{event.distance} km</Text>
+          </View>
+          <View style={styles.stat}>
+            <MaterialIcons name="terrain" size={16} color="#666" />
+            <Text style={styles.statText}>{event.elevation} m</Text>
+          </View>
+          <View style={styles.stat}>
+            <MaterialIcons name="timer" size={16} color="#666" />
+            <Text style={styles.statText}>{event.duration}h</Text>
+          </View>
+          <View
+            style={[
+              styles.difficultyBadge,
+              { backgroundColor: getDifficultyColor(event.difficulty) },
+            ]}
+          >
+            <Text style={styles.difficultyText}>Level {event.difficulty}</Text>
+          </View>
         </View>
-        <View style={styles.detailsRow}>
-          <Text style={styles.details}>Dužina: {distance} km</Text>
-          <Text style={styles.details}>Uspon: {elevation} m</Text>
-        </View>
-        <Text style={styles.price}>{price} din</Text>
-        <View style={styles.actions}>
-          <TouchableOpacity style={styles.actionButton}>
-            <MaterialIcons name="bookmark-border" size={20} color="#007AFF" />
-            <Text style={styles.actionText}>Sačuvaj</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <MaterialIcons name="edit" size={20} color="#007AFF" />
-            <Text style={styles.actionText}>Dopuni</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <MaterialIcons name="delete-outline" size={20} color="#007AFF" />
-            <Text style={styles.actionText}>Obriši</Text>
-          </TouchableOpacity>
+
+        <View style={styles.footer}>
+          <Text style={styles.price}>{event.price} din</Text>
+          <Text style={styles.date}>{event.date}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -52,93 +81,98 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 12,
     marginBottom: 16,
-    overflow: 'hidden',
-    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    elevation: 3,
+    overflow: 'hidden',
   },
-  dateTag: {
-    position: 'absolute',
-    left: 12,
-    top: 12,
-    backgroundColor: '#007AFF',
-    padding: 8,
-    borderRadius: 8,
-    zIndex: 1,
-  },
-  dateText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 12,
-  },
-  image: {
+  imageContainer: {
     width: '100%',
     height: 200,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     padding: 16,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: 8,
+    color: '#1a1a1a',
   },
   guideRow: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  guideLabel: {
-    color: '#666',
-  },
-  guideText: {
-    fontWeight: '500',
-  },
-  clubRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
   },
-  clubLogo: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    marginRight: 8,
+  guideText: {
+    marginLeft: 6,
+    color: '#666',
+    fontSize: 14,
+  },
+  clubButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    padding: 8,
+    borderRadius: 8,
+    marginBottom: 12,
   },
   clubName: {
     color: '#007AFF',
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 8,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  stat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statText: {
+    marginLeft: 4,
+    color: '#666',
+    fontSize: 14,
+  },
+  difficultyBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  difficultyText: {
+    color: 'white',
+    fontSize: 12,
     fontWeight: '500',
   },
-  detailsRow: {
+  footer: {
     flexDirection: 'row',
-    marginBottom: 8,
-  },
-  details: {
-    color: '#666',
-    marginRight: 16,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
   },
   price: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 16,
-  },
-  actions: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#e5e5e5',
-    paddingTop: 16,
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionText: {
     color: '#007AFF',
-    marginLeft: 4,
-    fontSize: 12,
+  },
+  date: {
+    fontSize: 14,
+    color: '#666',
   },
 });
 

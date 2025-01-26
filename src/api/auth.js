@@ -19,13 +19,13 @@ export const registerUser = async ({
     privacyPolicyAccepted
   );
   try {
-    const response = await client.post('/users/registration', {
+    const response = await client.post('/api/registration/', {
       first_name: firstName,
       last_name: lastName,
       email,
       password,
       'g-recaptcha-response': recaptchaToken,
-      'privacy-policy-check': privacyPolicyAccepted,
+      privacy_policy_check: privacyPolicyAccepted,
     });
     console.log('Registration successful:', response.data);
     return response.data;
