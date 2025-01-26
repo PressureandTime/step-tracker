@@ -17,9 +17,9 @@ apiClient.interceptors.request.use(async (config) => {
   }
 
   // Ensure trailing slashes are handled consistently
-  if (config.url.endsWith('/') && !config.url.includes('/api/login')) {
-    config.url = config.url.slice(0, -1);
-  }
+  //   if (config.url.endsWith('/') && !config.url.includes('/api/login')) {
+  //     config.url = config.url.slice(0, -1);
+  //   }
 
   return config;
 });

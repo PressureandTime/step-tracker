@@ -13,7 +13,7 @@ const EventCard = ({ event }) => {
     }
   };
 
-  const getDifficultyColor = (diff) => {
+  function getDifficultyColor(diff) {
     switch (diff) {
       case 1:
         return '#4CAF50'; // Easy - Green
@@ -21,15 +21,37 @@ const EventCard = ({ event }) => {
         return '#FFC107'; // Medium - Yellow
       case 3:
         return '#FF5722'; // Hard - Orange
+
+      case 4:
+        return '#03A9F4'; // Very Hard - Blue
+
+      case 5:
+        return '#9C27B0'; // Extreme - Purple
+
+      case 6:
+        return '#FF9800'; // Very Extreme - Orange
+
+      case 7:
+        return '#795548'; // Extreme - Brown
+
+      case 8:
+        return '#9E9E9E'; // Extreme - Gray
+
+      case 9:
+        return '#00E676'; // Very Easy - Green
+
+      case 10:
+        return '#00E676'; // Very Easy - Green
+
       default:
         return '#757575'; // Unknown - Gray
     }
-  };
+  }
 
   return (
     <TouchableOpacity style={styles.card} onPress={handleDetailPress}>
       <View style={styles.imageContainer}>
-        <MaterialIcons name="landscape" size={48} color="#666" />
+        <MaterialIcons name="landscape" size={80} color="#666" />
       </View>
       <View style={styles.content}>
         <Text style={styles.title}>{event.title}</Text>
@@ -51,7 +73,7 @@ const EventCard = ({ event }) => {
           </View>
           <View style={styles.stat}>
             <MaterialIcons name="terrain" size={16} color="#666" />
-            <Text style={styles.statText}>{event.elevation} m</Text>
+            <Text style={styles.statText}>{event?.elevation}</Text>
           </View>
           <View style={styles.stat}>
             <MaterialIcons name="timer" size={16} color="#666" />
