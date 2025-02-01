@@ -9,13 +9,7 @@ import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
 import MapTab from '../pages/ProfilePage/Map/MapTab';
 import Events from '../pages/Events/Events';
 import Settings from '../pages/Settings/Settings';
-
-// Placeholder components
-const NotificationsScreen = () => (
-  <View style={styles.screenContainer}>
-    <Text>Notifications Screen</Text>
-  </View>
-);
+import NotificationsScreen from '../pages/Notifications/Notifications';
 
 const Tab = createBottomTabNavigator();
 
