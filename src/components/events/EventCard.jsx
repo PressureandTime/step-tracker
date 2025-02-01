@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const EventCard = ({ event }) => {
@@ -51,7 +51,17 @@ const EventCard = ({ event }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={handleDetailPress}>
       <View style={styles.imageContainer}>
-        <MaterialIcons name="landscape" size={80} color="#666" />
+        {event.imageUrl ? (
+          <Image
+            source={{ uri: event.imageUrl }}
+            style={styles.image}
+            onError={(e) => {
+              console.error('Error loading image, falling back to icon', e);
+            }}
+          />
+        ) : (
+          <MaterialIcons name="landscape" size={80} color="#666" />
+        )}
       </View>
       <View style={styles.content}>
         <Text style={styles.title}>{event.title}</Text>
@@ -119,6 +129,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   content: {
     padding: 16,
