@@ -7,6 +7,7 @@ import styles from './ProfileStyles';
 import ProfileHeader from './ProfileHeader';
 import Gallery from './Gallery';
 import { Activities } from '../Activities/Activities';
+import { BicycleTracker } from '../Activities/BicycleTracker';
 import { FriendRequests } from '../Friends/FriendRequests';
 import MetricCard from '../../components/metrics/MetricsCard';
 import Info from '../../pages/Info/Info';
