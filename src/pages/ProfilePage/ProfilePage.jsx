@@ -1,5 +1,5 @@
 // ProfilePage.js
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { ImagePickerModal } from '../../components/image-picker/ImagePickerModal';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -11,7 +11,7 @@ import { BicycleTracker } from '../Activities/BicycleTracker';
 import { FriendRequests } from '../Friends/FriendRequests';
 import MetricCard from '../../components/metrics/MetricsCard';
 import Info from '../../pages/Info/Info';
-import MapTab from './Map/MapTab';
+import { EnhancedMapTab } from './Map/EnhancedMapTab';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
@@ -21,6 +21,37 @@ export const ProfilePage = () => {
 
   const [galleryImages, setGalleryImages] = useState([]);
   const [modalType, setModalType] = useState('profile'); // 'profile' or 'gallery'
+
+  // ----- Map-related state for EnhancedMapTab -----
+  const mapRef = useRef(null);
+  const [location, setLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const initialRegion = {
+    latitude: 37.78825, // Adjust as needed
+    longitude: -122.4324, // Adjust as needed
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
+  useEffect(() => {
+    // Simulated current location (in production, you might use a location hook)
+    setLocation({
+      coords: {
+        latitude: 37.78825,
+        longitude: -122.4324,
+      },
+    });
+    // Simulated selected location (for example, after a search)
+    setSelectedLocation({
+      latitude: 37.782,
+      longitude: -122.435,
+      title: 'Sample Location',
+    });
+  }, []);
+
+  // Handler for map region changes
+  const handleRegionChangeComplete = (region) => {
+    console.log('Region changed:', region);
+  };
 
   const handleImageSelect = (uri) => {
     if (modalType === 'profile') {
@@ -44,7 +75,18 @@ export const ProfilePage = () => {
       case 'Info':
         return <Info />;
       case 'Activities':
-        return <Activities />;
+        return (
+          <View style={{ flex: 1 }}>
+            <Activities />
+            <EnhancedMapTab
+              mapRef={mapRef}
+              initialRegion={initialRegion}
+              location={location}
+              selectedLocation={selectedLocation}
+              onRegionChangeComplete={handleRegionChangeComplete}
+            />
+          </View>
+        );
       case 'Gallery':
         return <Gallery images={galleryImages} onAddImage={() => openImagePicker('gallery')} />;
       case 'Friends':

@@ -7,6 +7,7 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  Keyboard,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import MapView, { Marker } from 'react-native-maps';
@@ -70,6 +71,9 @@ const MapTab = () => {
 
   const handleImmediateSearch = useCallback(async () => {
     if (!searchText.trim()) return;
+
+    // Dismiss the keyboard to allow access to bottom navigation
+    Keyboard.dismiss();
 
     // Show loading state if needed
     setShowSuggestions(false);
@@ -230,6 +234,7 @@ const MapTab = () => {
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
+        onTouchStart={() => Keyboard.dismiss()}
       >
         {location && (
           <Marker
@@ -257,6 +262,8 @@ const MapTab = () => {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
+          autoFocus={false}
+          blurOnSubmit={true}
           placeholder="Search location..."
           value={searchText}
           onChangeText={handleSearchChange}
@@ -275,7 +282,11 @@ const MapTab = () => {
       </View>
 
       {showSuggestions && suggestions.length > 0 && (
-        <ScrollView style={styles.suggestionsContainer} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          style={styles.suggestionsContainer}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
           {suggestions.map((suggestion, index) => (
             <TouchableOpacity
               key={index}

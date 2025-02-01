@@ -102,6 +102,7 @@ const BottomTabNavigator = () => {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         header: ({ navigation }) => <CustomHeader navigation={navigation} />,
+        tabBarHideOnKeyboard: false,
       }}
       sceneContainerStyle={{
         backgroundColor: '#f5f5f5',
