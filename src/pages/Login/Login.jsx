@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import BackgroundSVG from '../../components/BackgroundSVG';
 import { useMutation } from '@tanstack/react-query';
 import { setAuthTokens } from '../../utils/auth';
 import { apiClient } from '../../utils/apiClient';
@@ -10,6 +11,8 @@ const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const { setIsAuthenticated } = useContext(AuthContext);
 
   const loginMutation = useMutation({
@@ -66,37 +69,51 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.backgroundImage}>
+        <BackgroundSVG />
+      </View>
+
       <View style={styles.formContainer}>
-        <TextInput
-          style={[styles.input, loginMutation.isPending && styles.inputDisabled]}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          editable={!loginMutation.isPending}
-        />
-        <TextInput
-          style={[styles.input, loginMutation.isPending && styles.inputDisabled]}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoCapitalize="none"
-          autoCorrect={false}
-          editable={!loginMutation.isPending}
-        />
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <Text style={styles.title}>Conquer Your Summit</Text>
+        <Text style={styles.subtitle}>Ready for your next adventure.</Text>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Email</Text>
+          <TextInput
+            style={[styles.input, emailFocused && styles.inputFocused]}
+            placeholder="Enter your email"
+            placeholderTextColor="rgba(255, 255, 255, 0.6)"
+            value={email}
+            onChangeText={setEmail}
+            onFocus={() => setEmailFocused(true)}
+            onBlur={() => setEmailFocused(false)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Password</Text>
+          <TextInput
+            style={[styles.input, passwordFocused && styles.inputFocused]}
+            placeholder="Enter your password"
+            placeholderTextColor="rgba(255, 255, 255, 0.6)"
+            value={password}
+            onChangeText={setPassword}
+            onFocus={() => setPasswordFocused(true)}
+            onBlur={() => setPasswordFocused(false)}
+            secureTextEntry
+          />
+        </View>
+
         <TouchableOpacity
-          style={[styles.loginButton, loginMutation.isPending && styles.loginButtonDisabled]}
+          style={styles.loginButton}
           onPress={handleLogin}
-          disabled={loginMutation.isPending}
+          disabled={loginMutation.isLoading}
         >
-          {loginMutation.isPending ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.loginButtonText}>Login</Text>
+          <Text style={styles.loginButtonText}>Login</Text>
+          {loginMutation.isLoading && (
+            <ActivityIndicator style={styles.loadingSpinner} color="#2C5364" size="small" />
           )}
         </TouchableOpacity>
       </View>
