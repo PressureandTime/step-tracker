@@ -10,27 +10,43 @@ const ActivityMetrics = ({ currentData }) => {
 
       {/* Main Metrics */}
       <View style={styles.metricsGrid}>
-        <View style={styles.metricRow}>
-          <MetricCard value={currentData.steps} label="Steps" icon="directions-walk" />
+        <View style={[styles.metricRow, { marginBottom: 10 }]}>
+          <MetricCard
+            value={currentData.steps}
+            label="Steps"
+            icon="directions-walk"
+            isActivities={true}
+          />
           <MetricCard
             value={`${currentData.distance?.toFixed(2) ?? '0.00'} km`}
             label="Distance"
             icon="map"
+            isActivities={true}
           />
         </View>
-        <View style={styles.metricRow}>
+        <View style={[styles.metricRow, { marginBottom: 10 }]}>
           <MetricCard
             value={`${currentData.calories} kcal`}
             label="Calories"
             icon="local-fire-department"
+            isActivities={true}
           />
-          <MetricCard value={`${currentData.pace}/km`} label="Avg Pace" icon="speed" />
+          <MetricCard
+            value={`${currentData.pace}/km`}
+            label="Avg Pace"
+            icon="speed"
+            isActivities={true}
+          />
         </View>
-        <MetricCard
-          value={`${(currentData.elevation || 0).toFixed(1)} m`}
-          label="Elevation"
-          icon="terrain"
-        />
+        <View style={[styles.metricRow, { marginBottom: 10 }]}>
+          <MetricCard
+            value={`${(currentData.elevation || 0).toFixed(1)} m`}
+            label="Elevation"
+            icon="terrain"
+            isActivities={true}
+          />
+          <View style={{ flex: 1 }} />
+        </View>
       </View>
     </>
   );
