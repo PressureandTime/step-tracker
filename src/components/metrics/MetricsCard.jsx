@@ -6,7 +6,11 @@ import { styles } from './MetricsCardStyles';
 
 export default ({ value, label, icon }) => (
   <View style={styles.metricCard}>
-    {icon && <MaterialIcons name={icon} size={24} color="#4CAF50" style={{ marginBottom: 8 }} />}
+    {icon && (
+      <View style={styles.iconContainer}>
+        <MaterialIcons name={icon} size={28} color="#1565C0" />
+      </View>
+    )}
     <Text style={styles.metricValue}>{value}</Text>
     <Text style={styles.metricLabel}>{label}</Text>
   </View>

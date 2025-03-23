@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
   },
   container: {
     flex: 1,
@@ -28,7 +28,7 @@ export default StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingBottom: 80,
+    paddingBottom: 0,
   },
   buttonContainer: {
     position: 'absolute',
@@ -37,6 +37,7 @@ export default StyleSheet.create({
     right: 0,
     paddingHorizontal: 20,
     paddingBottom: 20,
+    backgroundColor: 'transparent',
   },
   button: {
     backgroundColor: '#007AFF',

@@ -11,7 +11,6 @@ import { BicycleTracker } from '../Activities/BicycleTracker';
 import { FriendRequests } from '../Friends/FriendRequests';
 import MetricCard from '../../components/metrics/MetricsCard';
 import Info from '../../pages/Info/Info';
-import { EnhancedMapTab } from './Map/EnhancedMapTab';
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('Activities');
@@ -76,15 +75,8 @@ export const ProfilePage = () => {
         return <Info />;
       case 'Activities':
         return (
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, backgroundColor: 'transparent' }}>
             <Activities />
-            <EnhancedMapTab
-              mapRef={mapRef}
-              initialRegion={initialRegion}
-              location={location}
-              selectedLocation={selectedLocation}
-              onRegionChangeComplete={handleRegionChangeComplete}
-            />
           </View>
         );
       case 'Gallery':
@@ -118,7 +110,7 @@ export const ProfilePage = () => {
 
         <View style={styles.contentContainer}>{renderTabContent()}</View>
 
-        {activeTab !== 'Gallery' && (
+        {activeTab !== 'Gallery' && activeTab !== 'Activities' && (
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>{editButtonText}</Text>

@@ -5,6 +5,7 @@ import { LineChart } from 'react-native-chart-kit';
 import styles from './ActivitiesStyles';
 
 import MetricCard from '../../components/metrics/MetricsCard';
+import BackgroundSVG from '../../components/BackgroundSVG';
 import {
   STEP_LENGTH,
   calculateDistance,
@@ -263,48 +264,65 @@ export const Activities = () => {
   }
 
   return (
-    <ScrollView>
-      <View style={styles.metricsContainer}>
-        {permissionStatus !== 'granted' && (
-          <Text style={styles.warningText}>Motion tracking requires permissions</Text>
-        )}
-        {/* Debug Info */}
-        <View style={styles.debugSection}>
-          <Text style={styles.debugText}>Last Update: {debugInfo.lastUpdate || 'Never'}</Text>
-          <Text style={styles.debugText}>Last Step Count: {debugInfo.lastStepCount}</Text>
-          <Text style={styles.debugText}>Total Updates: {debugInfo.totalUpdates}</Text>
-          <Text style={styles.debugText}>Current Acceleration: {debugInfo.acceleration}</Text>
-          <Text style={styles.debugText}>
-            Smoothed Acceleration: {debugInfo.smoothedAcceleration}
-          </Text>
-        </View>
-        {/* Main Metrics */}
-        <MetricCard value={currentData.steps} label="Steps" icon="directions-walk" />
-        <MetricCard
-          value={`${currentData.distance?.toFixed(2) ?? '0.00'} km`}
-          label="Distance"
-          icon="map"
-        />
-        <MetricCard
-          value={`${currentData.calories} kcal`}
-          label="Calories"
-          icon="local-fire-department"
-        />
-        <MetricCard value={`${currentData.pace}/km`} label="Avg Pace" icon="speed" />
-        <MetricCard
-          value={`${(currentData.elevation || 0).toFixed(1)} m`}
-          label="Elevation"
-          icon="terrain"
-        />
-
-        {/* Historical Comparison */}
-        <View style={styles.historySection}>
-          <Text style={styles.sectionTitle}>History</Text>
-          <Text>Daily Average: {historicalData.daily}</Text>
-          <Text>Weekly Progress: {historicalData.weekly}</Text>
-          <Text>Monthly Goal: {historicalData.monthly}</Text>
-        </View>
+    <View style={styles.container}>
+      <View style={styles.backgroundContainer}>
+        <BackgroundSVG />
       </View>
-    </ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.metricsContainer}>
+          {permissionStatus !== 'granted' && (
+            <Text style={styles.warningText}>Motion tracking requires permissions</Text>
+          )}
+          {/* Debug Info */}
+          <View style={styles.debugSection}>
+            <Text style={styles.debugText}>Last Update: {debugInfo.lastUpdate || 'Never'}</Text>
+            <Text style={styles.debugText}>Last Step Count: {debugInfo.lastStepCount}</Text>
+            <Text style={styles.debugText}>Total Updates: {debugInfo.totalUpdates}</Text>
+            <Text style={styles.debugText}>Current Acceleration: {debugInfo.acceleration}</Text>
+            <Text style={styles.debugText}>
+              Smoothed Acceleration: {debugInfo.smoothedAcceleration}
+            </Text>
+          </View>
+
+          <Text style={styles.sectionHeader}>Today's Activity</Text>
+
+          {/* Main Metrics */}
+          <MetricCard value={currentData.steps} label="Steps" icon="directions-walk" />
+          <MetricCard
+            value={`${currentData.distance?.toFixed(2) ?? '0.00'} km`}
+            label="Distance"
+            icon="map"
+          />
+          <MetricCard
+            value={`${currentData.calories} kcal`}
+            label="Calories"
+            icon="local-fire-department"
+          />
+          <MetricCard value={`${currentData.pace}/km`} label="Avg Pace" icon="speed" />
+          <MetricCard
+            value={`${(currentData.elevation || 0).toFixed(1)} m`}
+            label="Elevation"
+            icon="terrain"
+          />
+
+          {/* Historical Comparison */}
+          <View style={styles.historySection}>
+            <Text style={styles.sectionTitle}>History</Text>
+            <View style={styles.historyItem}>
+              <Text style={styles.historyLabel}>Daily Average:</Text>
+              <Text style={styles.historyValue}>{historicalData.daily}</Text>
+            </View>
+            <View style={styles.historyItem}>
+              <Text style={styles.historyLabel}>Weekly Progress:</Text>
+              <Text style={styles.historyValue}>{historicalData.weekly}</Text>
+            </View>
+            <View style={styles.historyItem}>
+              <Text style={styles.historyLabel}>Monthly Goal:</Text>
+              <Text style={styles.historyValue}>{historicalData.monthly}</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
