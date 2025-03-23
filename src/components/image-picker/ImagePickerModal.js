@@ -1,4 +1,3 @@
-// ImagePickerModal.js
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -70,7 +69,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#007bff',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
