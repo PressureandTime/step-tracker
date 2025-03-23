@@ -40,15 +40,18 @@ export default StyleSheet.create({
     backgroundColor: 'transparent',
   },
   button: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 12,
+    backgroundColor: 'rgba(0, 122, 255, 0.8)',
+    padding: 8,
+    borderRadius: 10,
     alignItems: 'center',
+    maxWidth: 150,
+    alignSelf: 'flex-start',
+    marginLeft: 20,
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '500',
   },
   galleryImage: {
     width: 120,
