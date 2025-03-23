@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Alert, Linking, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Platform,
+  TouchableOpacity,
+} from 'react-native';
 import { Pedometer, Barometer, DeviceMotion } from 'expo-sensors';
 import { LineChart } from 'react-native-chart-kit';
 import styles from './ActivitiesStyles';
@@ -35,6 +44,7 @@ export const Activities = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [permissionStatus, setPermissionStatus] = useState(null);
   const [isAvailable, setIsAvailable] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
   const [debugInfo, setDebugInfo] = useState({
     lastUpdate: null,
     lastStepCount: 0,
@@ -273,37 +283,58 @@ export const Activities = () => {
           {permissionStatus !== 'granted' && (
             <Text style={styles.warningText}>Motion tracking requires permissions</Text>
           )}
-          {/* Debug Info */}
-          <View style={styles.debugSection}>
-            <Text style={styles.debugText}>Last Update: {debugInfo.lastUpdate || 'Never'}</Text>
-            <Text style={styles.debugText}>Last Step Count: {debugInfo.lastStepCount}</Text>
-            <Text style={styles.debugText}>Total Updates: {debugInfo.totalUpdates}</Text>
-            <Text style={styles.debugText}>Current Acceleration: {debugInfo.acceleration}</Text>
-            <Text style={styles.debugText}>
-              Smoothed Acceleration: {debugInfo.smoothedAcceleration}
-            </Text>
+
+          {/* Debug Toggle Button */}
+          <View style={styles.debugToggleContainer}>
+            <TouchableOpacity
+              style={styles.debugToggleButton}
+              onPress={() => setShowDebug(!showDebug)}
+            >
+              <Text style={styles.debugToggleText}>
+                {showDebug ? 'Hide Debug Info' : 'Show Debug Info'}
+              </Text>
+            </TouchableOpacity>
           </View>
+
+          {/* Debug Info */}
+          {showDebug && (
+            <View style={styles.debugSection}>
+              <Text style={styles.debugText}>Last Update: {debugInfo.lastUpdate || 'Never'}</Text>
+              <Text style={styles.debugText}>Last Step Count: {debugInfo.lastStepCount}</Text>
+              <Text style={styles.debugText}>Total Updates: {debugInfo.totalUpdates}</Text>
+              <Text style={styles.debugText}>Current Acceleration: {debugInfo.acceleration}</Text>
+              <Text style={styles.debugText}>
+                Smoothed Acceleration: {debugInfo.smoothedAcceleration}
+              </Text>
+            </View>
+          )}
 
           <Text style={styles.sectionHeader}>Today's Activity</Text>
 
           {/* Main Metrics */}
-          <MetricCard value={currentData.steps} label="Steps" icon="directions-walk" />
-          <MetricCard
-            value={`${currentData.distance?.toFixed(2) ?? '0.00'} km`}
-            label="Distance"
-            icon="map"
-          />
-          <MetricCard
-            value={`${currentData.calories} kcal`}
-            label="Calories"
-            icon="local-fire-department"
-          />
-          <MetricCard value={`${currentData.pace}/km`} label="Avg Pace" icon="speed" />
-          <MetricCard
-            value={`${(currentData.elevation || 0).toFixed(1)} m`}
-            label="Elevation"
-            icon="terrain"
-          />
+          <View style={styles.metricsGrid}>
+            <View style={styles.metricRow}>
+              <MetricCard value={currentData.steps} label="Steps" icon="directions-walk" />
+              <MetricCard
+                value={`${currentData.distance?.toFixed(2) ?? '0.00'} km`}
+                label="Distance"
+                icon="map"
+              />
+            </View>
+            <View style={styles.metricRow}>
+              <MetricCard
+                value={`${currentData.calories} kcal`}
+                label="Calories"
+                icon="local-fire-department"
+              />
+              <MetricCard value={`${currentData.pace}/km`} label="Avg Pace" icon="speed" />
+            </View>
+            <MetricCard
+              value={`${(currentData.elevation || 0).toFixed(1)} m`}
+              label="Elevation"
+              icon="terrain"
+            />
+          </View>
 
           {/* Historical Comparison */}
           <View style={styles.historySection}>
