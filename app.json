@@ -23,7 +23,12 @@
     },
     "scheme": "steptracker",
     "plugins": [
-      "expo-dev-client",
+      [
+        "expo-dev-client",
+        {
+          "addGeneratedScheme": false
+        }
+      ],
       [
         "expo-sensors",
         {

@@ -40,7 +40,6 @@
 - @babel/core: ^7.20.0
 - @react-native-community/cli: ^18.0.0
 - react-devtools-core: ^6.0.1
-- react-native-network-logger: ^1.17.0
 
 ## Project Configuration
 

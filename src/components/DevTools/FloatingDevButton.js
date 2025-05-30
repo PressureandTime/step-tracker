@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, StyleSheet, Modal, View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import NetworkLogger from 'react-native-network-logger';
 
 export const FloatingDevButton = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -34,7 +33,6 @@ export const FloatingDevButton = () => {
                 <MaterialIcons name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <NetworkLogger />
           </View>
         </View>
       </Modal>

@@ -7,7 +7,7 @@ import { View, ActivityIndicator } from 'react-native';
 import 'react-native-devsettings';
 import AuthStack from './src/navigation/AuthStack';
 import { enableScreens } from 'react-native-screens';
-import { startNetworkLogging } from 'react-native-network-logger';
+
 import { FloatingDevButton } from './src/components/DevTools/FloatingDevButton';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 
@@ -17,8 +17,7 @@ if (__DEV__) {
     host: 'localhost',
     port: 8097,
   });
-  // Start network logging in development mode
-  startNetworkLogging();
+
 }
 
 enableScreens();
