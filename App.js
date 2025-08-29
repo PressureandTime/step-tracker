@@ -10,6 +10,7 @@ import { enableScreens } from 'react-native-screens';
 
 import { FloatingDevButton } from './src/components/DevTools/FloatingDevButton';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
+import { StepCounterProvider } from './src/context/StepCounterContext';
 
 // Enable Hermes debugging
 if (__DEV__) {
@@ -58,7 +59,9 @@ export default function App() {
         <View style={{ flex: 1 }}>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <AppContent />
+              <StepCounterProvider>
+                <AppContent />
+              </StepCounterProvider>
             </AuthProvider>
           </QueryClientProvider>
         </View>

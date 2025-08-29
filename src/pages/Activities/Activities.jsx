@@ -1,35 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, ScrollView, Text } from 'react-native';
 import styles from './ActivitiesStyles';
-
-// Components
 import BackgroundSVG from '../../components/BackgroundSVG';
-import DebugInfo from '../../components/activities/DebugInfo';
 import ActivityMetrics from '../../components/activities/ActivityMetrics';
-import HistorySection from '../../components/activities/HistorySection';
-
-// Hooks
-import { useMotionTracking } from '../../hooks/useMotionTracking';
+import { useStepCounter } from '../../context/StepCounterContext';
 
 export const Activities = () => {
-  const [showDebug, setShowDebug] = useState(false);
-  const [historicalData, setHistoricalData] = useState({
-    daily: 0,
-    weekly: 0,
-    monthly: 0,
-  });
+  const { steps, distance, isAvailable } = useStepCounter();
 
-  // Use our custom hook for motion tracking
-  const { currentData, isLoading, permissionStatus, debugInfo, setDebugInfo } = useMotionTracking();
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
-        <Text>Setting up motion tracking...</Text>
-      </View>
-    );
-  }
+  const currentData = {
+    steps: steps,
+    distance: distance,
+    calories: Math.round(steps * 0.04),
+    pace: steps > 0 ? '8:00' : '0:00',
+  };
 
   return (
     <View style={styles.container}>
@@ -38,18 +22,12 @@ export const Activities = () => {
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.metricsContainer}>
-          {permissionStatus !== 'granted' && (
-            <Text style={styles.warningText}>Motion tracking requires permissions</Text>
+          {isAvailable === 'false' && (
+            <Text style={styles.warningText}>
+              Step counter not available. Please check permissions.
+            </Text>
           )}
-
-          {/* Debug Information Component */}
-          <DebugInfo showDebug={showDebug} setShowDebug={setShowDebug} debugInfo={debugInfo} />
-
-          {/* Activity Metrics Component */}
           <ActivityMetrics currentData={currentData} />
-
-          {/* Historical Data Component */}
-          <HistorySection historicalData={historicalData} />
         </View>
       </ScrollView>
     </View>
