@@ -80,9 +80,9 @@ export const ProfilePage = () => {
           </View>
         );
       case 'Gallery':
-        return <Gallery images={galleryImages} onAddImage={() => openImagePicker('gallery')} />;
+        return null; // Hide Gallery content
       case 'Friends':
-        return <FriendRequests />;
+        return null; // Hide Friends content
       default:
         return null;
     }
@@ -101,11 +101,16 @@ export const ProfilePage = () => {
         />
 
         <View style={styles.tabs}>
-          {['Info', 'Activities', 'Gallery', 'Friends'].map((tab) => (
-            <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tabButton}>
-              <Text style={[styles.tabItem, activeTab === tab && styles.activeTab]}>{tab}</Text>
-            </TouchableOpacity>
-          ))}
+          {['Info', 'Activities', 'Gallery', 'Friends'].map((tab) => {
+            // Hide Gallery and Friends tabs - only show Info and Activities
+            if (tab === 'Gallery' || tab === 'Friends') return null;
+            
+            return (
+              <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tabButton}>
+                <Text style={[styles.tabItem, activeTab === tab && styles.activeTab]}>{tab}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <View style={styles.contentContainer}>{renderTabContent()}</View>

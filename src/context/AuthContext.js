@@ -9,11 +9,13 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const token = await getAuthTokens();
-      setIsAuthenticated(!!token);
+      // Temporarily bypass authentication - always authenticated
+      // const token = await getAuthTokens();
+      // setIsAuthenticated(!!token);
+      setIsAuthenticated(true); // Always authenticated for testing
     } catch (error) {
       console.log('Auth check error:', error);
-      setIsAuthenticated(false);
+      setIsAuthenticated(true); // Still authenticated even on error
     } finally {
       setIsLoading(false);
     }

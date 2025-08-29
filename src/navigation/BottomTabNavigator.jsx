@@ -49,6 +49,9 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     >
       {state.routes.map((route, index) => {
         if (route.name === 'Profile') return null;
+        
+        // Hide Events, Map, and Notifications tabs - only show Settings
+        if (route.name !== 'Settings') return null;
 
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -66,26 +69,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 
         return (
           <TouchableOpacity key={route.key} onPress={onPress} style={styles.tabItem}>
-            {route.name === 'Notifications' ? (
-              <View>
-                <MaterialIcons
-                  name="notifications"
-                  size={24}
-                  color={isFocused ? '#007AFF' : '#666'}
-                />
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>3</Text>
-                </View>
-              </View>
-            ) : (
-              <MaterialIcons
-                name={
-                  route.name === 'Events' ? 'explore' : route.name === 'Map' ? 'place' : 'settings'
-                }
-                size={24}
-                color={isFocused ? '#007AFF' : '#666'}
-              />
-            )}
+            <MaterialIcons
+              name="settings"
+              size={24}
+              color={isFocused ? '#007AFF' : '#666'}
+            />
             <Text style={[styles.tabLabel, { color: isFocused ? '#007AFF' : '#666' }]}>
               {route.name}
             </Text>
