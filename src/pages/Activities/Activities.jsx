@@ -6,7 +6,7 @@ import ActivityMetrics from '../../components/activities/ActivityMetrics';
 import { useStepCounter } from '../../context/StepCounterContext';
 
 export const Activities = () => {
-  const { steps, distance, isAvailable } = useStepCounter();
+  const { steps, distance, isAvailable, errorMessage } = useStepCounter();
 
   const currentData = {
     steps: steps,
@@ -24,7 +24,7 @@ export const Activities = () => {
         <View style={styles.metricsContainer}>
           {isAvailable === 'false' && (
             <Text style={styles.warningText}>
-              Step counter not available. Please check permissions.
+              {errorMessage || 'Step counter not available. Please check permissions.'}
             </Text>
           )}
           <ActivityMetrics currentData={currentData} />
