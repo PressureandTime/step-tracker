@@ -16,6 +16,12 @@ export const StepCounterProvider = ({ children }) => {
   const requestActivityRecognitionPermission = async () => {
     if (Platform.OS === 'android') {
       try {
+        // First check if we already have permission using Expo's method
+        const { status } = await Pedometer.getPermissionsAsync();
+        if (status === 'granted') {
+          return { granted: true, result: 'granted' };
+        }
+
         // Show educational dialog first
         await new Promise((resolve) => {
           Alert.alert(
@@ -30,7 +36,7 @@ export const StepCounterProvider = ({ children }) => {
           );
         });
 
-        // Then request the actual permission
+        // Use React Native's PermissionsAndroid since Pedometer.requestPermissionsAsync doesn't work on Android
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
           {
@@ -51,8 +57,24 @@ export const StepCounterProvider = ({ children }) => {
         console.warn('Permission request error:', err);
         return { granted: false, result: 'error' };
       }
+    } else {
+      // iOS: Use Expo's permission methods
+      try {
+        const { status } = await Pedometer.getPermissionsAsync();
+        if (status === 'granted') {
+          return { granted: true, result: 'granted' };
+        }
+
+        const { status: newStatus } = await Pedometer.requestPermissionsAsync();
+        return {
+          granted: newStatus === 'granted',
+          result: newStatus,
+        };
+      } catch (err) {
+        console.warn('iOS permission error:', err);
+        return { granted: false, result: 'error' };
+      }
     }
-    return { granted: true, result: 'granted' }; // iOS permissions handled by expo-sensors plugin
   };
 
   useEffect(() => {
@@ -85,9 +107,18 @@ export const StepCounterProvider = ({ children }) => {
                 );
             }
           } else {
-            setErrorMessage(
-              'Permission denied. Please enable motion permissions in your device settings.'
-            );
+            // iOS permission handling
+            switch (permissionResult.result) {
+              case 'denied':
+                setErrorMessage(
+                  'Motion permission was denied. Please enable it in Settings > Privacy & Security > Motion & Fitness.'
+                );
+                break;
+              default:
+                setErrorMessage(
+                  'Permission denied. Please enable motion permissions in your device settings.'
+                );
+            }
           }
           return;
         }
@@ -96,16 +127,27 @@ export const StepCounterProvider = ({ children }) => {
         setIsAvailable(String(available));
 
         if (available) {
-          const end = new Date();
-          const start = new Date();
-          start.setHours(0, 0, 0, 0);
+          // Note: getStepCountAsync is not supported on Android
+          // We'll rely on watchStepCount for real-time step counting
+          if (Platform.OS === 'ios') {
+            try {
+              const end = new Date();
+              const start = new Date();
+              start.setHours(0, 0, 0, 0);
 
-          const dailySteps = await Pedometer.getStepCountAsync(start, end);
-          if (dailySteps) {
-            setSteps(dailySteps.steps);
-            setDistance(calculateDistance(dailySteps.steps));
+              const dailySteps = await Pedometer.getStepCountAsync(start, end);
+              if (dailySteps) {
+                setSteps(dailySteps.steps);
+                setDistance(calculateDistance(dailySteps.steps));
+              }
+            } catch (error) {
+              console.log('Historical step data not available:', error);
+              // Continue with live step counting
+            }
           }
 
+          // Start live step counting (works on both iOS and Android)
+          // Note: watchStepCount gives the current total step count
           subscription = Pedometer.watchStepCount((result) => {
             setSteps(result.steps);
             setDistance(calculateDistance(result.steps));
