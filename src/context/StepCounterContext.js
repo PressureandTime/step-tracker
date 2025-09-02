@@ -16,27 +16,6 @@ export const StepCounterProvider = ({ children }) => {
   const requestActivityRecognitionPermission = async () => {
     if (Platform.OS === 'android') {
       try {
-        // First check if we already have permission using Expo's method
-        const { status } = await Pedometer.getPermissionsAsync();
-        if (status === 'granted') {
-          return { granted: true, result: 'granted' };
-        }
-
-        // Show educational dialog first
-        await new Promise((resolve) => {
-          Alert.alert(
-            'Step Counter Permission',
-            'This app needs access to your device motion to count your steps and track your daily activity.\n\nYour privacy is important to us - this permission is only used for step counting and no data is shared with third parties.',
-            [
-              {
-                text: 'OK',
-                onPress: resolve,
-              },
-            ]
-          );
-        });
-
-        // Use React Native's PermissionsAndroid since Pedometer.requestPermissionsAsync doesn't work on Android
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
           {
@@ -48,7 +27,6 @@ export const StepCounterProvider = ({ children }) => {
           }
         );
 
-        // Return detailed permission result
         return {
           granted: granted === PermissionsAndroid.RESULTS.GRANTED,
           result: granted,
@@ -58,22 +36,8 @@ export const StepCounterProvider = ({ children }) => {
         return { granted: false, result: 'error' };
       }
     } else {
-      // iOS: Use Expo's permission methods
-      try {
-        const { status } = await Pedometer.getPermissionsAsync();
-        if (status === 'granted') {
-          return { granted: true, result: 'granted' };
-        }
-
-        const { status: newStatus } = await Pedometer.requestPermissionsAsync();
-        return {
-          granted: newStatus === 'granted',
-          result: newStatus,
-        };
-      } catch (err) {
-        console.warn('iOS permission error:', err);
-        return { granted: false, result: 'error' };
-      }
+      // iOS: Permissions handled by expo-sensors plugin
+      return { granted: true, result: 'granted' };
     }
   };
 
