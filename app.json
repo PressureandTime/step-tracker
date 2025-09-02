@@ -7,7 +7,9 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "jsEngine": "hermes",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "bundleIdentifier": "com.steptracker.app",
       "infoPlist": {
@@ -57,6 +59,11 @@
         "android.permission.ACTIVITY_RECOGNITION"
       ],
       "package": "com.steptracker.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ddc2c51e-d44e-4e58-8b0e-c317ff912889"
+      }
     }
   }
 }
