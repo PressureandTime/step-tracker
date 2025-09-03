@@ -8,11 +8,20 @@
 ## Implementation
 
 - Uses `PermissionsAndroid` for Android permission requests
+- AsyncStorage for step data persistence
+- Daily step tracking with automatic reset
+- Background app state handling
 - Simple error handling
-- Shows cumulative steps (not daily steps)
 
-## Known Issues
+## Features
 
-- Shows cumulative steps since device boot, not daily steps
-- No daily reset at midnight
+- ✅ Persists steps when app goes to background
+- ✅ Daily step reset (new day = fresh start)
+- ✅ Survives app restarts and device reboots
+- ✅ Saves data periodically and on app background
+
+## Known Limitations
+
 - Requires physical device for testing
+- Step counting accuracy depends on device sensors
+- Background counting limited by OS restrictions

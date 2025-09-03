@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Platform, PermissionsAndroid } from 'react-native';
+import { Platform, PermissionsAndroid, AppState } from 'react-native';
 import { Pedometer } from 'expo-sensors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { calculateDistance } from '../utils/stepCalculations';
 
 const StepCounterContext = createContext();
@@ -12,6 +13,7 @@ export const StepCounterProvider = ({ children }) => {
   const [distance, setDistance] = useState(0);
   const [isAvailable, setIsAvailable] = useState('checking');
   const [errorMessage, setErrorMessage] = useState('');
+  const [dailyStepOffset, setDailyStepOffset] = useState(0);
 
   const requestPermission = async () => {
     if (Platform.OS === 'android') {
@@ -35,6 +37,44 @@ export const StepCounterProvider = ({ children }) => {
     return true;
   };
 
+  // Save steps to storage
+  const saveStepsToStorage = async (stepCount) => {
+    try {
+      const today = new Date().toDateString();
+      await AsyncStorage.setItem('dailySteps', JSON.stringify({
+        date: today,
+        steps: stepCount,
+        offset: dailyStepOffset
+      }));
+    } catch (error) {
+      console.warn('Failed to save steps:', error);
+    }
+  };
+
+  // Load steps from storage
+  const loadStepsFromStorage = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('dailySteps');
+      if (stored) {
+        const data = JSON.parse(stored);
+        const today = new Date().toDateString();
+        
+        if (data.date === today) {
+          // Same day, restore steps
+          return { steps: data.steps, offset: data.offset };
+        } else {
+          // New day, reset
+          await AsyncStorage.removeItem('dailySteps');
+          return { steps: 0, offset: 0 };
+        }
+      }
+      return { steps: 0, offset: 0 };
+    } catch (error) {
+      console.warn('Failed to load steps:', error);
+      return { steps: 0, offset: 0 };
+    }
+  };
+
   useEffect(() => {
     let subscription;
 
@@ -53,9 +93,22 @@ export const StepCounterProvider = ({ children }) => {
         setIsAvailable(String(available));
 
         if (available) {
+          // Load previous steps
+          const stored = await loadStepsFromStorage();
+          setSteps(stored.steps);
+          setDistance(calculateDistance(stored.steps));
+          setDailyStepOffset(stored.offset);
+
           subscription = Pedometer.watchStepCount((result) => {
-            setSteps(result.steps);
-            setDistance(calculateDistance(result.steps));
+            // Calculate daily steps by subtracting device boot steps offset
+            const dailySteps = Math.max(0, result.steps - stored.offset + stored.steps);
+            setSteps(dailySteps);
+            setDistance(calculateDistance(dailySteps));
+            
+            // Save periodically
+            if (dailySteps % 10 === 0) {
+              saveStepsToStorage(dailySteps);
+            }
           });
         } else {
           setErrorMessage('Step counting is not supported on this device.');
@@ -69,12 +122,24 @@ export const StepCounterProvider = ({ children }) => {
 
     startStepCounting();
 
+    // Handle app state changes
+    const handleAppStateChange = (nextAppState) => {
+      if (nextAppState === 'background' && steps > 0) {
+        saveStepsToStorage(steps);
+      }
+    };
+
+    const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
+
     return () => {
       if (subscription) {
         subscription.remove();
       }
+      if (appStateSubscription) {
+        appStateSubscription.remove();
+      }
     };
-  }, []);
+  }, [steps]);
 
   return (
     <StepCounterContext.Provider value={{ steps, distance, isAvailable, errorMessage }}>
