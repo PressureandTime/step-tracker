@@ -3,6 +3,7 @@ import { View, ScrollView, Text } from 'react-native';
 import styles from './ActivitiesStyles';
 import BackgroundSVG from '../../components/BackgroundSVG';
 import ActivityMetrics from '../../components/activities/ActivityMetrics';
+import ProfileImageHeader from '../../components/ProfileImageHeader';
 import { useStepCounter } from '../../context/StepCounterContext';
 
 export const Activities = () => {
@@ -21,6 +22,7 @@ export const Activities = () => {
         <BackgroundSVG />
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ProfileImageHeader />
         <View style={styles.metricsContainer}>
           {isAvailable === 'false' && (
             <Text style={styles.warningText}>

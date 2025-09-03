@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import MetricCard from '../../components/metrics/MetricsCard';
 import BackgroundSVG from '../../components/BackgroundSVG';
+import ProfileImageHeader from '../../components/ProfileImageHeader';
 import styles from './InfoStyles';
 
 const Info = () => {
@@ -11,6 +12,7 @@ const Info = () => {
         <BackgroundSVG />
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ProfileImageHeader />
         <View style={styles.metricsContainer}>
           <Text style={styles.sectionHeader}>User Information</Text>
           <View style={styles.metricRow}>

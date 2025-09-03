@@ -10,8 +10,14 @@ import MapTab from '../pages/ProfilePage/Map/MapTab';
 import Events from '../pages/Events/Events';
 import Settings from '../pages/Settings/Settings';
 import NotificationsScreen from '../pages/Notifications/Notifications';
+// NEW IMPORTS - Added for Activities and Info tabs
+import Activities from '../pages/Activities/Activities';
+import Info from '../pages/Info/Info';
 
 const Tab = createBottomTabNavigator();
+
+// TAB CONFIGURATION - Only Activities and Info tabs enabled
+const ENABLED_TABS = ['Activities', 'Info'];
 
 const CustomHeader = ({ navigation }) => {
   const insets = useSafeAreaInsets();
@@ -34,6 +40,20 @@ const CustomHeader = ({ navigation }) => {
   );
 };
 
+// TAB ICON MAPPING - Easy icon management for different tabs
+const getTabIcon = (routeName) => {
+  switch (routeName) {
+    case 'Activities':
+      return 'directions-run';
+    case 'Info':
+      return 'info';
+    case 'Settings':
+      return 'settings';
+    default:
+      return 'settings';
+  }
+};
+
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   const insets = useSafeAreaInsets();
 
@@ -49,9 +69,9 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     >
       {state.routes.map((route, index) => {
         if (route.name === 'Profile') return null;
-        
-        // Hide Events, Map, and Notifications tabs - only show Settings
-        if (route.name !== 'Settings') return null;
+
+        // Only show Activities and Info tabs
+        if (!ENABLED_TABS.includes(route.name)) return null;
 
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -70,7 +90,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         return (
           <TouchableOpacity key={route.key} onPress={onPress} style={styles.tabItem}>
             <MaterialIcons
-              name="settings"
+              name={getTabIcon(route.name)}
               size={24}
               color={isFocused ? '#007AFF' : '#666'}
             />
@@ -87,6 +107,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
+      initialRouteName="Activities"
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         header: ({ navigation }) => <CustomHeader navigation={navigation} />,
@@ -96,6 +117,8 @@ const BottomTabNavigator = () => {
         backgroundColor: '#f5f5f5',
       }}
     >
+      <Tab.Screen name="Activities" component={Activities} />
+      <Tab.Screen name="Info" component={Info} />
       <Tab.Screen name="Events" component={Events} />
       <Tab.Screen name="Map" component={MapTab} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />

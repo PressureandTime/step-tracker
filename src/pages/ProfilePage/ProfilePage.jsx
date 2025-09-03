@@ -11,35 +11,34 @@ import { BicycleTracker } from '../Activities/BicycleTracker';
 import { FriendRequests } from '../Friends/FriendRequests';
 import MetricCard from '../../components/metrics/MetricsCard';
 import Info from '../../pages/Info/Info';
+import { useProfile } from '../../context/ProfileContext';
 
 export const ProfilePage = () => {
+  const { profileImage, setProfileImage } = useProfile();
   const [activeTab, setActiveTab] = useState('Activities');
   const editButtonText = activeTab === 'Friends' ? 'Add Friend' : 'Edit Profile';
-  const [profileImage, setProfileImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const [galleryImages, setGalleryImages] = useState([]);
   const [modalType, setModalType] = useState('profile'); // 'profile' or 'gallery'
 
-  // ----- Map-related state for EnhancedMapTab -----
   const mapRef = useRef(null);
   const [location, setLocation] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const initialRegion = {
-    latitude: 37.78825, // Adjust as needed
-    longitude: -122.4324, // Adjust as needed
+    latitude: 37.78825,
+    longitude: -122.4324,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   };
+
   useEffect(() => {
-    // Simulated current location (in production, you might use a location hook)
     setLocation({
       coords: {
         latitude: 37.78825,
         longitude: -122.4324,
       },
     });
-    // Simulated selected location (for example, after a search)
     setSelectedLocation({
       latitude: 37.782,
       longitude: -122.435,
@@ -47,7 +46,6 @@ export const ProfilePage = () => {
     });
   }, []);
 
-  // Handler for map region changes
   const handleRegionChangeComplete = (region) => {
     console.log('Region changed:', region);
   };
@@ -80,9 +78,9 @@ export const ProfilePage = () => {
           </View>
         );
       case 'Gallery':
-        return null; // Hide Gallery content
+        return null;
       case 'Friends':
-        return null; // Hide Friends content
+        return null;
       default:
         return null;
     }
@@ -101,16 +99,11 @@ export const ProfilePage = () => {
         />
 
         <View style={styles.tabs}>
-          {['Info', 'Activities', 'Gallery', 'Friends'].map((tab) => {
-            // Hide Gallery and Friends tabs - only show Info and Activities
-            if (tab === 'Gallery' || tab === 'Friends') return null;
-            
-            return (
-              <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tabButton}>
-                <Text style={[styles.tabItem, activeTab === tab && styles.activeTab]}>{tab}</Text>
-              </TouchableOpacity>
-            );
-          })}
+          {['Info', 'Activities'].map((tab) => (
+            <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tabButton}>
+              <Text style={[styles.tabItem, activeTab === tab && styles.activeTab]}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         <View style={styles.contentContainer}>{renderTabContent()}</View>
