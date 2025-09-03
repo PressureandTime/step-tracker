@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AppState } from 'react-native';
-import { isStepCountingSupported, startStepCounterUpdate, stopStepCounterUpdate } from '@dongminyu/react-native-step-counter';
+import { Platform, PermissionsAndroid, AppState } from 'react-native';
+import { Pedometer } from 'expo-sensors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { calculateDistance } from '../utils/stepCalculations';
 
@@ -16,13 +16,25 @@ export const StepCounterProvider = ({ children }) => {
   const [dailyStepOffset, setDailyStepOffset] = useState(0);
 
   const requestPermission = async () => {
-    try {
-      const supported = await isStepCountingSupported();
-      return supported;
-    } catch (err) {
-      console.warn('Step counter not supported:', err);
-      return false;
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
+          {
+            title: 'Step Counter Permission',
+            message: 'Allow StepTracker to access your device motion for step counting?',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn('Permission error:', err);
+        return false;
+      }
     }
+    return true; // iOS doesn't require explicit permission for Pedometer
   };
 
   // Save steps to storage
@@ -71,32 +83,37 @@ export const StepCounterProvider = ({ children }) => {
         const hasPermission = await requestPermission();
         if (!hasPermission) {
           setIsAvailable('false');
-          setErrorMessage('Step counting is not supported on this device.');
+          setErrorMessage(
+            'Permission denied. Please enable motion permissions in your device settings.'
+          );
           return;
         }
 
-        setIsAvailable('true');
+        const available = await Pedometer.isAvailableAsync();
+        setIsAvailable(String(available));
 
-        // Load previous steps
-        const stored = await loadStepsFromStorage();
-        setSteps(stored.steps);
-        setDistance(calculateDistance(stored.steps));
+        if (available) {
+          // Load previous steps
+          const stored = await loadStepsFromStorage();
+          setSteps(stored.steps);
+          setDistance(calculateDistance(stored.steps));
+          setDailyStepOffset(stored.offset);
 
-        // Start true background step counter
-        subscription = startStepCounterUpdate(
-          new Date(),
-          ({ steps: currentSteps }) => {
-            // Update steps in real-time (works in background!)
-            setSteps(currentSteps);
-            setDistance(calculateDistance(currentSteps));
+          subscription = Pedometer.watchStepCount((result) => {
+            // Update steps in real-time
+            setSteps(result.steps);
+            setDistance(calculateDistance(result.steps));
             
             // Save periodically
-            if (currentSteps % 10 === 0) {
-              saveStepsToStorage(currentSteps);
+            if (result.steps % 10 === 0) {
+              saveStepsToStorage(result.steps);
             }
-          }
-        );
+          });
 
+        } else {
+          setIsAvailable('false');
+          setErrorMessage('Step counter not available on this device.');
+        }
       } catch (err) {
         console.error('Step counter error:', err);
         setIsAvailable('false');
@@ -116,14 +133,14 @@ export const StepCounterProvider = ({ children }) => {
     const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
-      if (subscription) {
-        stopStepCounterUpdate();
+      if (subscription && subscription.remove) {
+        subscription.remove();
       }
       if (appStateSubscription) {
         appStateSubscription.remove();
       }
     };
-  }, [steps]);
+  }, []);
 
   return (
     <StepCounterContext.Provider value={{ steps, distance, isAvailable, errorMessage }}>
