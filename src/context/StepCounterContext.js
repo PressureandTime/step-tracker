@@ -84,9 +84,7 @@ export const StepCounterProvider = ({ children }) => {
 
         // Start true background step counter
         subscription = startStepCounterUpdate(
-          {
-            immediate: true
-          },
+          new Date(),
           ({ steps: currentSteps }) => {
             // Update steps in real-time (works in background!)
             setSteps(currentSteps);
