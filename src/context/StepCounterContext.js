@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Platform, PermissionsAndroid, AppState } from 'react-native';
-import { Pedometer } from 'expo-sensors';
+import { AppState } from 'react-native';
+import { isStepCountingSupported, startStepCounterUpdate, stopStepCounterUpdate } from '@dongminyu/react-native-step-counter';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { calculateDistance } from '../utils/stepCalculations';
 
@@ -16,25 +16,13 @@ export const StepCounterProvider = ({ children }) => {
   const [dailyStepOffset, setDailyStepOffset] = useState(0);
 
   const requestPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
-          {
-            title: 'Step Counter Permission',
-            message: 'Allow StepTracker to access your device motion for step counting?',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn('Permission error:', err);
-        return false;
-      }
+    try {
+      const supported = await isStepCountingSupported();
+      return supported;
+    } catch (err) {
+      console.warn('Step counter not supported:', err);
+      return false;
     }
-    return true;
   };
 
   // Save steps to storage
@@ -83,36 +71,34 @@ export const StepCounterProvider = ({ children }) => {
         const hasPermission = await requestPermission();
         if (!hasPermission) {
           setIsAvailable('false');
-          setErrorMessage(
-            'Permission denied. Please enable motion permissions in your device settings.'
-          );
+          setErrorMessage('Step counting is not supported on this device.');
           return;
         }
 
-        const available = await Pedometer.isAvailableAsync();
-        setIsAvailable(String(available));
+        setIsAvailable('true');
 
-        if (available) {
-          // Load previous steps
-          const stored = await loadStepsFromStorage();
-          setSteps(stored.steps);
-          setDistance(calculateDistance(stored.steps));
-          setDailyStepOffset(stored.offset);
+        // Load previous steps
+        const stored = await loadStepsFromStorage();
+        setSteps(stored.steps);
+        setDistance(calculateDistance(stored.steps));
 
-          subscription = Pedometer.watchStepCount((result) => {
-            // Calculate daily steps by subtracting device boot steps offset
-            const dailySteps = Math.max(0, result.steps - stored.offset + stored.steps);
-            setSteps(dailySteps);
-            setDistance(calculateDistance(dailySteps));
+        // Start true background step counter
+        subscription = startStepCounterUpdate(
+          {
+            immediate: true
+          },
+          ({ steps: currentSteps }) => {
+            // Update steps in real-time (works in background!)
+            setSteps(currentSteps);
+            setDistance(calculateDistance(currentSteps));
             
             // Save periodically
-            if (dailySteps % 10 === 0) {
-              saveStepsToStorage(dailySteps);
+            if (currentSteps % 10 === 0) {
+              saveStepsToStorage(currentSteps);
             }
-          });
-        } else {
-          setErrorMessage('Step counting is not supported on this device.');
-        }
+          }
+        );
+
       } catch (err) {
         console.error('Step counter error:', err);
         setIsAvailable('false');
@@ -122,7 +108,7 @@ export const StepCounterProvider = ({ children }) => {
 
     startStepCounting();
 
-    // Handle app state changes
+    // Handle app state changes for saving
     const handleAppStateChange = (nextAppState) => {
       if (nextAppState === 'background' && steps > 0) {
         saveStepsToStorage(steps);
@@ -133,7 +119,7 @@ export const StepCounterProvider = ({ children }) => {
 
     return () => {
       if (subscription) {
-        subscription.remove();
+        stopStepCounterUpdate();
       }
       if (appStateSubscription) {
         appStateSubscription.remove();
